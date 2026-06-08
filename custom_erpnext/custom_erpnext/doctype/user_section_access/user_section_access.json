@@ -1,0 +1,66 @@
+{
+ "actions": [],
+ "creation": "2026-06-06 17:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "section",
+  "can_read",
+  "can_create",
+  "can_update",
+  "can_delete",
+  "can_approve"
+ ],
+ "fields": [
+  {
+   "fieldname": "section",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Section",
+   "options": "Branch Section",
+   "reqd": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "can_read",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Can Read"
+  },
+  {
+   "fieldname": "can_create",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Can Create"
+  },
+  {
+   "fieldname": "can_update",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Can Update"
+  },
+  {
+   "fieldname": "can_delete",
+   "fieldtype": "Check",
+   "label": "Can Delete"
+  },
+  {
+   "fieldname": "can_approve",
+   "fieldtype": "Check",
+   "label": "Can Approve"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-06-06 17:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Custom Erpnext",
+ "name": "User Section Access",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

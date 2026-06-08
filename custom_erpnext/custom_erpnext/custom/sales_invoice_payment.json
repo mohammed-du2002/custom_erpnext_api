@@ -1,0 +1,29 @@
+{
+ "custom_fields": [
+  {
+   "fieldname": "payment_provider",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "insert_after": "mode_of_payment",
+   "label": "Payment Provider",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice Payment-payment_provider",
+   "dt": "Sales Invoice Payment",
+   "options": "Cash\nCredit Card\nDebit Card\nBank Transfer\nTabby\nTamara\nLoyalty Points\nWallet"
+  },
+  {
+   "fieldname": "transaction_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "insert_after": "reference_no",
+   "label": "Transaction ID",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice Payment-transaction_id",
+   "dt": "Sales Invoice Payment"
+  }
+ ],
+ "custom_perms": [],
+ "doctype": "Sales Invoice Payment",
+ "property_setters": [],
+ "sync_on_migrate": 1
+}

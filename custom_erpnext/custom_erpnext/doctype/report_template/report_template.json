@@ -1,0 +1,140 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "autoname": "field:report_name",
+ "creation": "2026-06-06 22:00:00.000000",
+ "doctype": "DocType",
+ "document_type": "Setup",
+ "engine": "InnoDB",
+ "field_order": [
+  "report_name",
+  "report_type",
+  "applicable_to",
+  "is_active",
+  "column_break_1",
+  "schedule",
+  "output_format",
+  "email_recipients",
+  "section_query",
+  "report_query",
+  "filters",
+  "chart_config"
+ ],
+ "fields": [
+  {
+   "fieldname": "report_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Report Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "report_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Report Type",
+   "options": "Operational\nFinancial\nInventory\nSales\nPurchasing\nSync",
+   "reqd": 1
+  },
+  {
+   "fieldname": "applicable_to",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Applicable To",
+   "options": "Head Office\nBranch\nBoth",
+   "reqd": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Is Active"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "On Demand",
+   "fieldname": "schedule",
+   "fieldtype": "Select",
+   "label": "Schedule",
+   "options": "On Demand\nDaily\nWeekly\nMonthly"
+  },
+  {
+   "default": "PDF",
+   "fieldname": "output_format",
+   "fieldtype": "Select",
+   "label": "Output Format",
+   "options": "PDF\nExcel\nHTML\nDashboard"
+  },
+  {
+   "fieldname": "email_recipients",
+   "fieldtype": "Small Text",
+   "label": "Email Recipients"
+  },
+  {
+   "fieldname": "section_query",
+   "fieldtype": "Section Break",
+   "label": "Query Configuration"
+  },
+  {
+   "fieldname": "report_query",
+   "fieldtype": "Code",
+   "label": "Report Query",
+   "options": "SQL"
+  },
+  {
+   "fieldname": "filters",
+   "fieldtype": "Code",
+   "label": "Filters (JSON)",
+   "options": "JSON"
+  },
+  {
+   "fieldname": "chart_config",
+   "fieldtype": "Code",
+   "label": "Chart Config (JSON)",
+   "options": "JSON"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-06-06 22:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Custom Erpnext",
+ "name": "Report Template",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

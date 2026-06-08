@@ -1,0 +1,335 @@
+{
+ "custom_fields": [
+  {
+   "fieldname": "retail_pos_section",
+   "fieldtype": "Section Break",
+   "insert_after": "pos_profile",
+   "label": "Retail POS",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-retail_pos_section",
+   "dt": "Sales Invoice"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "insert_after": "retail_pos_section",
+   "label": "Branch",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-branch",
+   "dt": "Sales Invoice",
+   "options": "Company Branch",
+   "search_index": 1
+  },
+  {
+   "fieldname": "pos_device",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "insert_after": "branch",
+   "label": "POS Device",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-pos_device",
+   "dt": "Sales Invoice",
+   "options": "POS Device",
+   "search_index": 1
+  },
+  {
+   "fieldname": "cashier",
+   "fieldtype": "Link",
+   "insert_after": "pos_device",
+   "label": "Cashier",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-cashier",
+   "dt": "Sales Invoice",
+   "options": "User"
+  },
+  {
+   "fieldname": "shift_id",
+   "fieldtype": "Data",
+   "insert_after": "cashier",
+   "label": "Shift ID",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-shift_id",
+   "dt": "Sales Invoice"
+  },
+  {
+   "fieldname": "retail_sync_column",
+   "fieldtype": "Column Break",
+   "insert_after": "shift_id",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-retail_sync_column",
+   "dt": "Sales Invoice"
+  },
+  {
+   "fieldname": "offline_invoice_id",
+   "fieldtype": "Data",
+   "in_standard_filter": 1,
+   "insert_after": "retail_sync_column",
+   "label": "Offline Invoice ID",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-offline_invoice_id",
+   "dt": "Sales Invoice",
+   "search_index": 1
+  },
+  {
+   "default": "Pending",
+   "fieldname": "sync_status",
+   "fieldtype": "Select",
+   "in_standard_filter": 1,
+   "insert_after": "offline_invoice_id",
+   "label": "Sync Status",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-sync_status",
+   "dt": "Sales Invoice",
+   "options": "Synced\nPending\nFailed",
+   "search_index": 1
+  },
+  {
+   "fieldname": "sync_log",
+   "fieldtype": "Small Text",
+   "insert_after": "sync_status",
+   "label": "Sync Log",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-sync_log",
+   "dt": "Sales Invoice",
+   "read_only": 1
+  },
+  {
+   "fieldname": "retail_returns_section",
+   "fieldtype": "Section Break",
+   "depends_on": "eval:doc.is_return",
+   "insert_after": "return_against",
+   "label": "Return Details",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-retail_returns_section",
+   "dt": "Sales Invoice"
+  },
+  {
+   "fieldname": "return_reason",
+   "fieldtype": "Small Text",
+   "depends_on": "eval:doc.is_return",
+   "insert_after": "retail_returns_section",
+   "label": "Return Reason",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-return_reason",
+   "dt": "Sales Invoice"
+  },
+  {
+   "fieldname": "return_details",
+   "fieldtype": "Table",
+   "depends_on": "eval:doc.is_return",
+   "insert_after": "return_reason",
+   "label": "Return Details",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-return_details",
+   "dt": "Sales Invoice",
+   "options": "Sales Return Detail"
+  },
+  {
+   "fieldname": "retail_promotion_section",
+   "fieldtype": "Section Break",
+   "insert_after": "coupon_code",
+   "label": "Promotion",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-retail_promotion_section",
+   "dt": "Sales Invoice"
+  },
+  {
+   "fieldname": "promotion_applied",
+   "fieldtype": "Data",
+   "insert_after": "retail_promotion_section",
+   "label": "Promotion Applied",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-promotion_applied",
+   "dt": "Sales Invoice"
+  },
+  {
+   "fieldname": "retail_einvoice_section",
+   "fieldtype": "Section Break",
+   "insert_after": "taxes",
+   "label": "E-Invoicing",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-retail_einvoice_section",
+   "dt": "Sales Invoice"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_e_invoice",
+   "fieldtype": "Check",
+   "insert_after": "retail_einvoice_section",
+   "label": "Is E-Invoice",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-is_e_invoice",
+   "dt": "Sales Invoice"
+  },
+  {
+   "fieldname": "e_invoice_type",
+   "fieldtype": "Select",
+   "depends_on": "eval:doc.is_e_invoice",
+   "insert_after": "is_e_invoice",
+   "label": "E-Invoice Type",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-e_invoice_type",
+   "dt": "Sales Invoice",
+   "options": "B2C\nB2B"
+  },
+  {
+   "fieldname": "pi_number",
+   "fieldtype": "Data",
+   "depends_on": "eval:doc.is_e_invoice",
+   "insert_after": "e_invoice_type",
+   "label": "Tax Invoice Number",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-pi_number",
+   "dt": "Sales Invoice"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "zatca_status",
+   "fieldtype": "Select",
+   "depends_on": "eval:doc.is_e_invoice",
+   "insert_after": "pi_number",
+   "label": "ZATCA Status",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-zatca_status",
+   "dt": "Sales Invoice",
+   "options": "Pending\nCleared\nReported\nRejected"
+  },
+  {
+   "fieldname": "zatca_uuid",
+   "fieldtype": "Data",
+   "depends_on": "eval:doc.is_e_invoice",
+   "insert_after": "zatca_status",
+   "label": "ZATCA UUID",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-zatca_uuid",
+   "dt": "Sales Invoice",
+   "read_only": 1
+  },
+  {
+   "fieldname": "retail_payment_section",
+   "fieldtype": "Section Break",
+   "insert_after": "payments",
+   "label": "Extended Payments",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-retail_payment_section",
+   "dt": "Sales Invoice"
+  },
+  {
+   "fieldname": "tabby_reference",
+   "fieldtype": "Data",
+   "insert_after": "retail_payment_section",
+   "label": "Tabby Reference",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-tabby_reference",
+   "dt": "Sales Invoice"
+  },
+  {
+   "fieldname": "tamara_reference",
+   "fieldtype": "Data",
+   "insert_after": "tabby_reference",
+   "label": "Tamara Reference",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-tamara_reference",
+   "dt": "Sales Invoice"
+  },
+  {
+   "fieldname": "wallet_amount",
+   "fieldtype": "Currency",
+   "insert_after": "tamara_reference",
+   "label": "Wallet Amount",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-wallet_amount",
+   "dt": "Sales Invoice"
+  },
+  {
+   "fieldname": "retail_delivery_section",
+   "fieldtype": "Section Break",
+   "insert_after": "shipping_rule",
+   "label": "Delivery",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-retail_delivery_section",
+   "dt": "Sales Invoice"
+  },
+  {
+   "fieldname": "shipping_cost",
+   "fieldtype": "Currency",
+   "insert_after": "retail_delivery_section",
+   "label": "Shipping Cost",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-shipping_cost",
+   "dt": "Sales Invoice"
+  },
+  {
+   "fieldname": "delivery_date",
+   "fieldtype": "Date",
+   "insert_after": "shipping_cost",
+   "label": "Delivery Date",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-delivery_date",
+   "dt": "Sales Invoice"
+  },
+  {
+   "fieldname": "driver",
+   "fieldtype": "Data",
+   "insert_after": "delivery_date",
+   "label": "Driver",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-driver",
+   "dt": "Sales Invoice"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "delivery_status",
+   "fieldtype": "Select",
+   "insert_after": "driver",
+   "label": "Delivery Status",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-delivery_status",
+   "dt": "Sales Invoice",
+   "options": "Pending\nOut for Delivery\nDelivered\nReturned"
+  },
+  {
+   "fieldname": "retail_approval_section",
+   "fieldtype": "Section Break",
+   "insert_after": "delivery_status",
+   "label": "Approval",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-retail_approval_section",
+   "dt": "Sales Invoice"
+  },
+  {
+   "fieldname": "approved_by",
+   "fieldtype": "Link",
+   "insert_after": "retail_approval_section",
+   "label": "Approved By",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-approved_by",
+   "dt": "Sales Invoice",
+   "options": "User"
+  },
+  {
+   "fieldname": "approval_date",
+   "fieldtype": "Datetime",
+   "insert_after": "approved_by",
+   "label": "Approval Date",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-approval_date",
+   "dt": "Sales Invoice"
+  },
+  {
+   "fieldname": "discount_authorized_by",
+   "fieldtype": "Link",
+   "insert_after": "approval_date",
+   "label": "Discount Authorized By",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-discount_authorized_by",
+   "dt": "Sales Invoice",
+   "options": "User"
+  }
+ ],
+ "custom_perms": [],
+ "doctype": "Sales Invoice",
+ "property_setters": [],
+ "sync_on_migrate": 1
+}

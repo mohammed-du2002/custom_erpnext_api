@@ -1,0 +1,58 @@
+{
+ "custom_fields": [
+  {
+   "fieldname": "retail_settings_section",
+   "fieldtype": "Section Break",
+   "insert_after": "parent_company",
+   "label": "Retail Settings",
+   "module": "Custom Erpnext",
+   "name": "Company-retail_settings_section",
+   "dt": "Company"
+  },
+  {
+   "fieldname": "number_of_branches",
+   "fieldtype": "Int",
+   "insert_after": "retail_settings_section",
+   "label": "Number of Branches",
+   "module": "Custom Erpnext",
+   "name": "Company-number_of_branches",
+   "dt": "Company",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "default_cost_center",
+   "fieldtype": "Link",
+   "insert_after": "number_of_branches",
+   "label": "Default Cost Center",
+   "module": "Custom Erpnext",
+   "name": "Company-default_cost_center",
+   "dt": "Company",
+   "options": "Cost Center"
+  },
+  {
+   "fieldname": "central_warehouse",
+   "fieldtype": "Link",
+   "insert_after": "default_cost_center",
+   "label": "Central Warehouse",
+   "module": "Custom Erpnext",
+   "name": "Company-central_warehouse",
+   "dt": "Company",
+   "options": "Warehouse"
+  },
+  {
+   "default": "Centralized",
+   "fieldname": "party_account_model",
+   "fieldtype": "Select",
+   "insert_after": "central_warehouse",
+   "label": "Party Account Model",
+   "module": "Custom Erpnext",
+   "name": "Company-party_account_model",
+   "dt": "Company",
+   "options": "Centralized\nPer-Branch"
+  }
+ ],
+ "custom_perms": [],
+ "doctype": "Company",
+ "property_setters": [],
+ "sync_on_migrate": 1
+}

@@ -1,0 +1,167 @@
+{
+ "custom_fields": [
+  {
+   "fieldname": "retail_purchase_section",
+   "fieldtype": "Section Break",
+   "insert_after": "cost_center",
+   "label": "Retail Purchase",
+   "module": "Custom Erpnext",
+   "name": "Purchase Invoice-retail_purchase_section",
+   "dt": "Purchase Invoice"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "insert_after": "retail_purchase_section",
+   "label": "Branch",
+   "module": "Custom Erpnext",
+   "name": "Purchase Invoice-branch",
+   "dt": "Purchase Invoice",
+   "options": "Company Branch",
+   "search_index": 1
+  },
+  {
+   "fieldname": "invoice_type",
+   "fieldtype": "Select",
+   "in_standard_filter": 1,
+   "insert_after": "branch",
+   "label": "Invoice Type",
+   "module": "Custom Erpnext",
+   "name": "Purchase Invoice-invoice_type",
+   "dt": "Purchase Invoice",
+   "options": "Standard\nImport\nService"
+  },
+  {
+   "fieldname": "vat_number",
+   "fieldtype": "Data",
+   "insert_after": "invoice_type",
+   "label": "VAT Number",
+   "module": "Custom Erpnext",
+   "name": "Purchase Invoice-vat_number",
+   "dt": "Purchase Invoice"
+  },
+  {
+   "fieldname": "retail_tax_column",
+   "fieldtype": "Column Break",
+   "insert_after": "vat_number",
+   "module": "Custom Erpnext",
+   "name": "Purchase Invoice-retail_tax_column",
+   "dt": "Purchase Invoice"
+  },
+  {
+   "fieldname": "retail_tax_rate",
+   "fieldtype": "Percent",
+   "insert_after": "retail_tax_column",
+   "label": "Retail Tax Rate",
+   "module": "Custom Erpnext",
+   "name": "Purchase Invoice-retail_tax_rate",
+   "dt": "Purchase Invoice"
+  },
+  {
+   "fieldname": "retail_tax_amount",
+   "fieldtype": "Currency",
+   "insert_after": "retail_tax_rate",
+   "label": "Retail Tax Amount",
+   "module": "Custom Erpnext",
+   "name": "Purchase Invoice-retail_tax_amount",
+   "dt": "Purchase Invoice"
+  },
+  {
+   "default": "Unpaid",
+   "fieldname": "retail_payment_status",
+   "fieldtype": "Select",
+   "in_standard_filter": 1,
+   "insert_after": "retail_tax_amount",
+   "label": "Retail Payment Status",
+   "module": "Custom Erpnext",
+   "name": "Purchase Invoice-retail_payment_status",
+   "dt": "Purchase Invoice",
+   "options": "Unpaid\nPartially Paid\nPaid\nOverdue"
+  },
+  {
+   "fieldname": "retail_landed_cost_section",
+   "fieldtype": "Section Break",
+   "insert_after": "claimed_landed_cost_amount",
+   "label": "Landed Cost & Addons",
+   "module": "Custom Erpnext",
+   "name": "Purchase Invoice-retail_landed_cost_section",
+   "dt": "Purchase Invoice"
+  },
+  {
+   "default": "0",
+   "fieldname": "landed_cost_applied",
+   "fieldtype": "Check",
+   "insert_after": "retail_landed_cost_section",
+   "label": "Landed Cost Applied",
+   "module": "Custom Erpnext",
+   "name": "Purchase Invoice-landed_cost_applied",
+   "dt": "Purchase Invoice"
+  },
+  {
+   "fieldname": "landed_cost_voucher",
+   "fieldtype": "Link",
+   "depends_on": "eval:doc.landed_cost_applied",
+   "insert_after": "landed_cost_applied",
+   "label": "Landed Cost Voucher",
+   "module": "Custom Erpnext",
+   "name": "Purchase Invoice-landed_cost_voucher",
+   "dt": "Purchase Invoice",
+   "options": "Landed Cost Voucher"
+  },
+  {
+   "fieldname": "addons",
+   "fieldtype": "Table",
+   "insert_after": "landed_cost_voucher",
+   "label": "Invoice Addons",
+   "module": "Custom Erpnext",
+   "name": "Purchase Invoice-addons",
+   "dt": "Purchase Invoice",
+   "options": "Purchase Invoice Addon"
+  },
+  {
+   "fieldname": "prepayment_applied",
+   "fieldtype": "Currency",
+   "insert_after": "addons",
+   "label": "Prepayment Applied",
+   "module": "Custom Erpnext",
+   "name": "Purchase Invoice-prepayment_applied",
+   "dt": "Purchase Invoice"
+  },
+  {
+   "fieldname": "retail_einvoice_section",
+   "fieldtype": "Section Break",
+   "insert_after": "prepayment_applied",
+   "label": "E-Invoicing",
+   "module": "Custom Erpnext",
+   "name": "Purchase Invoice-retail_einvoice_section",
+   "dt": "Purchase Invoice"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_e_invoice",
+   "fieldtype": "Check",
+   "insert_after": "retail_einvoice_section",
+   "label": "Is E-Invoice",
+   "module": "Custom Erpnext",
+   "name": "Purchase Invoice-is_e_invoice",
+   "dt": "Purchase Invoice"
+  },
+  {
+   "default": "Pending",
+   "depends_on": "eval:doc.is_e_invoice",
+   "fieldname": "zatca_status",
+   "fieldtype": "Select",
+   "insert_after": "is_e_invoice",
+   "label": "ZATCA Status",
+   "module": "Custom Erpnext",
+   "name": "Purchase Invoice-zatca_status",
+   "dt": "Purchase Invoice",
+   "options": "Pending\nSubmitted\nAccepted\nRejected"
+  }
+ ],
+ "custom_perms": [],
+ "doctype": "Purchase Invoice",
+ "property_setters": [],
+ "sync_on_migrate": 1
+}

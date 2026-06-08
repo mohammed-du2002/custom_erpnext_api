@@ -43,7 +43,13 @@ app_license = "mit"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {
+	"Sales Invoice": "public/js/sales_invoice.js",
+	"Item": "public/js/item.js",
+	"POS Profile": "public/js/pos_profile.js",
+	"Purchase Invoice": "public/js/purchase_invoice.js",
+	"Stock Entry": "public/js/stock_entry.js",
+}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -87,6 +93,11 @@ app_license = "mit"
 
 # before_install = "custom_erpnext.install.before_install"
 # after_install = "custom_erpnext.install.after_install"
+after_migrate = [
+	"custom_erpnext.setup.workflows.setup_workflows",
+	"custom_erpnext.setup.user_permissions.sync_all_user_branch_permissions",
+	"custom_erpnext.setup.naming_series.sync_all_branch_naming_series",
+]
 
 # Uninstallation
 # ------------
@@ -126,46 +137,111 @@ app_license = "mit"
 # -----------
 # Permissions evaluated in scripted ways
 
-# permission_query_conditions = {
-# 	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
-# }
-#
-# has_permission = {
-# 	"Event": "frappe.desk.doctype.event.event.has_permission",
-# }
+from custom_erpnext.services.branch_permission_service import BRANCH_ISOLATED_DOCTYPES
+from custom_erpnext.services.naming_series_service import BRANCH_NAMING_DOCTYPES
+
+_NAMING_SERIES_VALIDATE = "custom_erpnext.services.naming_series_service.apply_branch_naming_series"
+_BRANCH_VALIDATE = "custom_erpnext.services.branch_permission_service.validate_document_branch"
+
+
+def _branch_validate_handlers(doctype):
+	handlers = [_BRANCH_VALIDATE]
+	if doctype in BRANCH_NAMING_DOCTYPES:
+		handlers.append(_NAMING_SERIES_VALIDATE)
+	return handlers
+
+permission_query_conditions = {
+	doctype: "custom_erpnext.services.branch_permission_service.get_permission_query_conditions"
+	for doctype in BRANCH_ISOLATED_DOCTYPES
+}
+
+has_permission = {
+	doctype: "custom_erpnext.services.branch_permission_service.has_branch_permission"
+	for doctype in BRANCH_ISOLATED_DOCTYPES
+}
 
 # Document Events
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+doc_events = {
+	"Item": {
+		"validate": "custom_erpnext.services.item_service.validate_selling_prices",
+		"on_update": "custom_erpnext.services.sync_service.trigger_urgent_sync_for_item",
+	},
+	"Item Price": {
+		"on_update": "custom_erpnext.services.sync_service.trigger_urgent_sync_for_item_price",
+	},
+	"Material Request": {
+		"validate": _branch_validate_handlers("Material Request"),
+		"on_update": "custom_erpnext.setup.workflows.on_material_request_update",
+	},
+	"Stock Transfer Request": {
+		"validate": _branch_validate_handlers("Stock Transfer Request"),
+		"on_update": "custom_erpnext.setup.workflows.on_stock_transfer_update",
+	},
+	"User Discount Profile": {
+		"on_update": "custom_erpnext.services.branch_permission_service.sync_profile_branch_permissions",
+	},
+	"User": {
+		"on_update": "custom_erpnext.services.branch_permission_service.sync_user_default_branch",
+	},
+	"Sales Invoice": {
+		"validate": _branch_validate_handlers("Sales Invoice"),
+	},
+	"Purchase Order": {
+		"validate": _branch_validate_handlers("Purchase Order"),
+	},
+	"Purchase Invoice": {
+		"validate": _branch_validate_handlers("Purchase Invoice"),
+	},
+	"Purchase Receipt": {
+		"validate": _branch_validate_handlers("Purchase Receipt"),
+	},
+	"Landed Cost Voucher": {
+		"validate": "custom_erpnext.services.branch_permission_service.validate_document_branch",
+	},
+	"POS Profile": {
+		"validate": "custom_erpnext.services.branch_permission_service.validate_document_branch",
+	},
+	"Warehouse": {
+		"validate": "custom_erpnext.services.branch_permission_service.validate_document_branch",
+	},
+	"Customer": {
+		"validate": "custom_erpnext.services.branch_permission_service.validate_document_branch",
+	},
+	"Supplier": {
+		"validate": "custom_erpnext.services.branch_permission_service.validate_document_branch",
+	},
+	"Daily Sales Summary": {
+		"validate": _branch_validate_handlers("Daily Sales Summary"),
+	},
+	"POS Device": {
+		"validate": "custom_erpnext.services.branch_permission_service.validate_document_branch",
+	},
+	"Payment Method Config": {
+		"validate": "custom_erpnext.services.branch_permission_service.validate_document_branch",
+	},
+	"Party Account Mapping": {
+		"validate": "custom_erpnext.services.branch_permission_service.validate_document_branch",
+	},
+	"User Activity Monitor": {
+		"validate": "custom_erpnext.services.branch_permission_service.validate_document_branch",
+	},
+	"Branch Section": {
+		"validate": "custom_erpnext.services.branch_permission_service.validate_document_branch",
+	},
+}
 
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"custom_erpnext.tasks.all"
-# 	],
-# 	"daily": [
-# 		"custom_erpnext.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"custom_erpnext.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"custom_erpnext.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"custom_erpnext.tasks.monthly"
-# 	],
-# }
+scheduler_events = {
+	"cron": {
+		"*/10 * * * *": ["custom_erpnext.tasks.run_scheduled_sync"],
+	},
+	"hourly": ["custom_erpnext.tasks.check_item_reorder"],
+}
 
 # Testing
 # -------

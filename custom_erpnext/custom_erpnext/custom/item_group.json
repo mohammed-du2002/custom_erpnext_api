@@ -1,0 +1,65 @@
+{
+ "custom_fields": [
+  {
+   "fieldname": "retail_item_group_section",
+   "fieldtype": "Section Break",
+   "insert_after": "parent_item_group",
+   "label": "Retail Settings",
+   "module": "Custom Erpnext",
+   "name": "Item Group-retail_item_group_section",
+   "dt": "Item Group"
+  },
+  {
+   "fieldname": "group_type",
+   "fieldtype": "Select",
+   "insert_after": "retail_item_group_section",
+   "label": "Group Type",
+   "module": "Custom Erpnext",
+   "name": "Item Group-group_type",
+   "dt": "Item Group",
+   "options": "Main Group\nSub Group"
+  },
+  {
+   "fieldname": "parent_main_group",
+   "fieldtype": "Link",
+   "depends_on": "eval:doc.group_type=='Sub Group'",
+   "insert_after": "group_type",
+   "label": "Parent Main Group",
+   "module": "Custom Erpnext",
+   "name": "Item Group-parent_main_group",
+   "dt": "Item Group",
+   "options": "Item Group"
+  },
+  {
+   "fieldname": "default_margin",
+   "fieldtype": "Percent",
+   "insert_after": "parent_main_group",
+   "label": "Default Margin %",
+   "module": "Custom Erpnext",
+   "name": "Item Group-default_margin",
+   "dt": "Item Group"
+  },
+  {
+   "fieldname": "commission_rate",
+   "fieldtype": "Percent",
+   "insert_after": "default_margin",
+   "label": "Commission Rate %",
+   "module": "Custom Erpnext",
+   "name": "Item Group-commission_rate",
+   "dt": "Item Group"
+  },
+  {
+   "fieldname": "category_code",
+   "fieldtype": "Data",
+   "insert_after": "commission_rate",
+   "label": "Category Code",
+   "module": "Custom Erpnext",
+   "name": "Item Group-category_code",
+   "dt": "Item Group"
+  }
+ ],
+ "custom_perms": [],
+ "doctype": "Item Group",
+ "property_setters": [],
+ "sync_on_migrate": 1
+}

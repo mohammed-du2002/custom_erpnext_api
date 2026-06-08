@@ -1,0 +1,73 @@
+{
+ "custom_fields": [
+  {
+   "fieldname": "retail_transfer_section",
+   "fieldtype": "Section Break",
+   "insert_after": "purpose",
+   "label": "Retail Transfer",
+   "module": "Custom Erpnext",
+   "name": "Stock Entry-retail_transfer_section",
+   "dt": "Stock Entry"
+  },
+  {
+   "fieldname": "transfer_request",
+   "fieldtype": "Link",
+   "insert_after": "retail_transfer_section",
+   "label": "Stock Transfer Request",
+   "module": "Custom Erpnext",
+   "name": "Stock Entry-transfer_request",
+   "dt": "Stock Entry",
+   "options": "Stock Transfer Request"
+  },
+  {
+   "fieldname": "transfer_cost",
+   "fieldtype": "Currency",
+   "insert_after": "transfer_request",
+   "label": "Transfer Cost",
+   "module": "Custom Erpnext",
+   "name": "Stock Entry-transfer_cost",
+   "dt": "Stock Entry"
+  },
+  {
+   "fieldname": "driver_name",
+   "fieldtype": "Data",
+   "insert_after": "transfer_cost",
+   "label": "Driver Name",
+   "module": "Custom Erpnext",
+   "name": "Stock Entry-driver_name",
+   "dt": "Stock Entry"
+  },
+  {
+   "fieldname": "vehicle_plate",
+   "fieldtype": "Data",
+   "insert_after": "driver_name",
+   "label": "Vehicle Plate",
+   "module": "Custom Erpnext",
+   "name": "Stock Entry-vehicle_plate",
+   "dt": "Stock Entry"
+  },
+  {
+   "fieldname": "received_by",
+   "fieldtype": "Link",
+   "insert_after": "vehicle_plate",
+   "label": "Received By",
+   "module": "Custom Erpnext",
+   "name": "Stock Entry-received_by",
+   "dt": "Stock Entry",
+   "options": "User"
+  },
+  {
+   "fieldname": "condition_notes",
+   "fieldtype": "Text",
+   "insert_after": "received_by",
+   "label": "Condition Notes",
+   "module": "Custom Erpnext",
+   "name": "Stock Entry-condition_notes",
+   "dt": "Stock Entry"
+  }
+ ],
+ "custom_perms": [],
+ "doctype": "Stock Entry",
+ "property_setters": [],
+ "sync_on_migrate": 1
+}

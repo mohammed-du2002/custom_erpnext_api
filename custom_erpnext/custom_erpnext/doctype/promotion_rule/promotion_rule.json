@@ -1,0 +1,262 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "autoname": "field:promotion_code",
+ "creation": "2026-06-06 22:00:00.000000",
+ "doctype": "DocType",
+ "document_type": "Setup",
+ "engine": "InnoDB",
+ "field_order": [
+  "promotion_name",
+  "promotion_code",
+  "promotion_type",
+  "is_active",
+  "column_break_1",
+  "start_date",
+  "end_date",
+  "priority",
+  "section_branches",
+  "applicable_branches",
+  "section_discount",
+  "discount_percent",
+  "fixed_amount",
+  "buy_qty",
+  "get_qty",
+  "bundle_items",
+  "column_break_2",
+  "minimum_amount",
+  "maximum_discount",
+  "section_scope",
+  "applicable_items",
+  "applicable_item_groups",
+  "applicable_customers",
+  "customer_groups",
+  "section_coupon",
+  "is_stackable",
+  "coupon_code_required",
+  "coupon_code",
+  "usage_limit",
+  "usage_count",
+  "banner_image"
+ ],
+ "fields": [
+  {
+   "fieldname": "promotion_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Promotion Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "promotion_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Promotion Code",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "promotion_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Promotion Type",
+   "options": "Percentage Discount\nFixed Amount\nBuy X Get Y\nBundle Price\nHappy Hour",
+   "reqd": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Is Active"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End Date",
+   "reqd": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "priority",
+   "fieldtype": "Int",
+   "label": "Priority",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "section_branches",
+   "fieldtype": "Section Break",
+   "label": "Branches"
+  },
+  {
+   "fieldname": "applicable_branches",
+   "fieldtype": "Table",
+   "label": "Applicable Branches",
+   "options": "Promotion Branch"
+  },
+  {
+   "fieldname": "section_discount",
+   "fieldtype": "Section Break",
+   "label": "Discount Rules"
+  },
+  {
+   "fieldname": "discount_percent",
+   "fieldtype": "Percent",
+   "label": "Discount Percent"
+  },
+  {
+   "fieldname": "fixed_amount",
+   "fieldtype": "Currency",
+   "label": "Fixed Amount"
+  },
+  {
+   "fieldname": "buy_qty",
+   "fieldtype": "Int",
+   "label": "Buy Qty",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "get_qty",
+   "fieldtype": "Int",
+   "label": "Get Qty",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "bundle_items",
+   "fieldtype": "Code",
+   "label": "Bundle Items (JSON)",
+   "options": "JSON"
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "minimum_amount",
+   "fieldtype": "Currency",
+   "label": "Minimum Amount"
+  },
+  {
+   "fieldname": "maximum_discount",
+   "fieldtype": "Currency",
+   "label": "Maximum Discount"
+  },
+  {
+   "fieldname": "section_scope",
+   "fieldtype": "Section Break",
+   "label": "Scope"
+  },
+  {
+   "fieldname": "applicable_items",
+   "fieldtype": "Code",
+   "label": "Applicable Items (JSON)",
+   "options": "JSON"
+  },
+  {
+   "fieldname": "applicable_item_groups",
+   "fieldtype": "Small Text",
+   "label": "Applicable Item Groups"
+  },
+  {
+   "fieldname": "applicable_customers",
+   "fieldtype": "Small Text",
+   "label": "Applicable Customers"
+  },
+  {
+   "fieldname": "customer_groups",
+   "fieldtype": "Small Text",
+   "label": "Customer Groups"
+  },
+  {
+   "fieldname": "section_coupon",
+   "fieldtype": "Section Break",
+   "label": "Coupon"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_stackable",
+   "fieldtype": "Check",
+   "label": "Is Stackable"
+  },
+  {
+   "default": "0",
+   "fieldname": "coupon_code_required",
+   "fieldtype": "Check",
+   "label": "Coupon Code Required"
+  },
+  {
+   "fieldname": "coupon_code",
+   "fieldtype": "Data",
+   "label": "Coupon Code"
+  },
+  {
+   "fieldname": "usage_limit",
+   "fieldtype": "Int",
+   "label": "Usage Limit",
+   "non_negative": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "usage_count",
+   "fieldtype": "Int",
+   "label": "Usage Count",
+   "non_negative": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "banner_image",
+   "fieldtype": "Attach Image",
+   "label": "Banner Image"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-06-06 22:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Custom Erpnext",
+ "name": "Promotion Rule",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "promotion_name",
+ "track_changes": 1
+}

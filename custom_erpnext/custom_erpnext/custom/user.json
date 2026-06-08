@@ -1,0 +1,144 @@
+{
+ "custom_fields": [
+  {
+   "fieldname": "retail_access_section",
+   "fieldtype": "Section Break",
+   "insert_after": "block_modules",
+   "label": "Retail Access",
+   "module": "Custom Erpnext",
+   "name": "User-retail_access_section",
+   "dt": "User"
+  },
+  {
+   "fieldname": "employee_id",
+   "fieldtype": "Data",
+   "insert_after": "retail_access_section",
+   "label": "Employee ID",
+   "module": "Custom Erpnext",
+   "name": "User-employee_id",
+   "dt": "User"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "insert_after": "employee_id",
+   "label": "Default Branch",
+   "module": "Custom Erpnext",
+   "name": "User-branch",
+   "dt": "User",
+   "options": "Company Branch",
+   "search_index": 1
+  },
+  {
+   "fieldname": "sections",
+   "fieldtype": "Table",
+   "insert_after": "branch",
+   "label": "Section Access",
+   "module": "Custom Erpnext",
+   "name": "User-sections",
+   "dt": "User",
+   "options": "User Section Access"
+  },
+  {
+   "fieldname": "retail_permissions_column",
+   "fieldtype": "Column Break",
+   "insert_after": "sections",
+   "module": "Custom Erpnext",
+   "name": "User-retail_permissions_column",
+   "dt": "User"
+  },
+  {
+   "fieldname": "max_discount",
+   "fieldtype": "Percent",
+   "insert_after": "retail_permissions_column",
+   "label": "Max Discount %",
+   "module": "Custom Erpnext",
+   "name": "User-max_discount",
+   "dt": "User"
+  },
+  {
+   "default": "0",
+   "fieldname": "can_override_price",
+   "fieldtype": "Check",
+   "insert_after": "max_discount",
+   "label": "Can Override Price",
+   "module": "Custom Erpnext",
+   "name": "User-can_override_price",
+   "dt": "User"
+  },
+  {
+   "default": "0",
+   "fieldname": "can_give_credit_sales",
+   "fieldtype": "Check",
+   "insert_after": "can_override_price",
+   "label": "Can Give Credit Sales",
+   "module": "Custom Erpnext",
+   "name": "User-can_give_credit_sales",
+   "dt": "User"
+  },
+  {
+   "fieldname": "cashier_number",
+   "fieldtype": "Data",
+   "insert_after": "can_give_credit_sales",
+   "label": "Cashier Number",
+   "module": "Custom Erpnext",
+   "name": "User-cashier_number",
+   "dt": "User"
+  },
+  {
+   "default": "0",
+   "fieldname": "pos_access",
+   "fieldtype": "Check",
+   "insert_after": "cashier_number",
+   "label": "POS Access",
+   "module": "Custom Erpnext",
+   "name": "User-pos_access",
+   "dt": "User"
+  },
+  {
+   "default": "1",
+   "fieldname": "erp_access",
+   "fieldtype": "Check",
+   "insert_after": "pos_access",
+   "label": "ERP Access",
+   "module": "Custom Erpnext",
+   "name": "User-erp_access",
+   "dt": "User"
+  },
+  {
+   "default": "0",
+   "fieldname": "mobile_access",
+   "fieldtype": "Check",
+   "insert_after": "erp_access",
+   "label": "Mobile Access",
+   "module": "Custom Erpnext",
+   "name": "User-mobile_access",
+   "dt": "User"
+  },
+  {
+   "fieldname": "last_password_change",
+   "fieldtype": "Date",
+   "insert_after": "mobile_access",
+   "label": "Last Password Change",
+   "module": "Custom Erpnext",
+   "name": "User-last_password_change",
+   "dt": "User",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "force_password_change",
+   "fieldtype": "Check",
+   "insert_after": "last_password_change",
+   "label": "Force Password Change",
+   "module": "Custom Erpnext",
+   "name": "User-force_password_change",
+   "dt": "User"
+  }
+ ],
+ "custom_perms": [],
+ "doctype": "User",
+ "property_setters": [],
+ "sync_on_migrate": 1
+}

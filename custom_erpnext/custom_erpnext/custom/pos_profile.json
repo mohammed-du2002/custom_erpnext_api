@@ -1,0 +1,180 @@
+{
+ "custom_fields": [
+  {
+   "fieldname": "retail_pos_profile_section",
+   "fieldtype": "Section Break",
+   "insert_after": "warehouse",
+   "label": "Retail POS Settings",
+   "module": "Custom Erpnext",
+   "name": "POS Profile-retail_pos_profile_section",
+   "dt": "POS Profile"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "insert_after": "retail_pos_profile_section",
+   "label": "Branch",
+   "module": "Custom Erpnext",
+   "name": "POS Profile-branch",
+   "dt": "POS Profile",
+   "options": "Company Branch",
+   "search_index": 1
+  },
+  {
+   "fieldname": "default_location_code",
+   "fieldtype": "Data",
+   "insert_after": "branch",
+   "label": "Default Bin Location Code",
+   "module": "Custom Erpnext",
+   "name": "POS Profile-default_location_code",
+   "dt": "POS Profile"
+  },
+  {
+   "fieldname": "default_cashier",
+   "fieldtype": "Link",
+   "insert_after": "default_location_code",
+   "label": "Default Cashier",
+   "module": "Custom Erpnext",
+   "name": "POS Profile-default_cashier",
+   "dt": "POS Profile",
+   "options": "User"
+  },
+  {
+   "fieldname": "retail_pos_profile_column",
+   "fieldtype": "Column Break",
+   "insert_after": "default_cashier",
+   "module": "Custom Erpnext",
+   "name": "POS Profile-retail_pos_profile_column",
+   "dt": "POS Profile"
+  },
+  {
+   "fieldname": "max_discount_percent",
+   "fieldtype": "Percent",
+   "insert_after": "retail_pos_profile_column",
+   "label": "Max Discount %",
+   "module": "Custom Erpnext",
+   "name": "POS Profile-max_discount_percent",
+   "dt": "POS Profile"
+  },
+  {
+   "default": "0",
+   "fieldname": "require_manager_approval_for_discount",
+   "fieldtype": "Check",
+   "insert_after": "max_discount_percent",
+   "label": "Require Manager Approval for Discount",
+   "module": "Custom Erpnext",
+   "name": "POS Profile-require_manager_approval_for_discount",
+   "dt": "POS Profile"
+  },
+  {
+   "fieldname": "retail_receipt_section",
+   "fieldtype": "Section Break",
+   "insert_after": "require_manager_approval_for_discount",
+   "label": "Receipt & Hardware",
+   "module": "Custom Erpnext",
+   "name": "POS Profile-retail_receipt_section",
+   "dt": "POS Profile"
+  },
+  {
+   "fieldname": "receipt_header",
+   "fieldtype": "Small Text",
+   "insert_after": "retail_receipt_section",
+   "label": "Receipt Header",
+   "module": "Custom Erpnext",
+   "name": "POS Profile-receipt_header",
+   "dt": "POS Profile"
+  },
+  {
+   "fieldname": "receipt_footer",
+   "fieldtype": "Small Text",
+   "insert_after": "receipt_header",
+   "label": "Receipt Footer",
+   "module": "Custom Erpnext",
+   "name": "POS Profile-receipt_footer",
+   "dt": "POS Profile"
+  },
+  {
+   "default": "1",
+   "fieldname": "auto_print_receipt",
+   "fieldtype": "Check",
+   "insert_after": "receipt_footer",
+   "label": "Auto Print Receipt",
+   "module": "Custom Erpnext",
+   "name": "POS Profile-auto_print_receipt",
+   "dt": "POS Profile"
+  },
+  {
+   "fieldname": "retail_hardware_column",
+   "fieldtype": "Column Break",
+   "insert_after": "auto_print_receipt",
+   "module": "Custom Erpnext",
+   "name": "POS Profile-retail_hardware_column",
+   "dt": "POS Profile"
+  },
+  {
+   "default": "1",
+   "fieldname": "offline_mode_enabled",
+   "fieldtype": "Check",
+   "insert_after": "retail_hardware_column",
+   "label": "Offline Mode Enabled",
+   "module": "Custom Erpnext",
+   "name": "POS Profile-offline_mode_enabled",
+   "dt": "POS Profile"
+  },
+  {
+   "default": "10",
+   "fieldname": "sync_interval_minutes",
+   "fieldtype": "Int",
+   "insert_after": "offline_mode_enabled",
+   "label": "Sync Interval (Minutes)",
+   "module": "Custom Erpnext",
+   "name": "POS Profile-sync_interval_minutes",
+   "dt": "POS Profile",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "printer_ip",
+   "fieldtype": "Data",
+   "insert_after": "sync_interval_minutes",
+   "label": "Printer IP",
+   "module": "Custom Erpnext",
+   "name": "POS Profile-printer_ip",
+   "dt": "POS Profile"
+  },
+  {
+   "default": "0",
+   "fieldname": "cash_drawer_enabled",
+   "fieldtype": "Check",
+   "insert_after": "printer_ip",
+   "label": "Cash Drawer Enabled",
+   "module": "Custom Erpnext",
+   "name": "POS Profile-cash_drawer_enabled",
+   "dt": "POS Profile"
+  },
+  {
+   "default": "0",
+   "fieldname": "weighing_scale_enabled",
+   "fieldtype": "Check",
+   "insert_after": "cash_drawer_enabled",
+   "label": "Weighing Scale Enabled",
+   "module": "Custom Erpnext",
+   "name": "POS Profile-weighing_scale_enabled",
+   "dt": "POS Profile"
+  },
+  {
+   "fieldname": "barcode_scanner_type",
+   "fieldtype": "Select",
+   "insert_after": "weighing_scale_enabled",
+   "label": "Barcode Scanner Type",
+   "module": "Custom Erpnext",
+   "name": "POS Profile-barcode_scanner_type",
+   "dt": "POS Profile",
+   "options": "1D\n2D\nCamera"
+  }
+ ],
+ "custom_perms": [],
+ "doctype": "POS Profile",
+ "property_setters": [],
+ "sync_on_migrate": 1
+}

@@ -1,0 +1,224 @@
+{
+ "custom_fields": [
+  {
+   "fieldname": "retail_item_section",
+   "fieldtype": "Section Break",
+   "insert_after": "brand",
+   "label": "Retail Settings",
+   "module": "Custom Erpnext",
+   "name": "Item-retail_item_section",
+   "dt": "Item"
+  },
+  {
+   "fieldname": "item_type",
+   "fieldtype": "Select",
+   "in_standard_filter": 1,
+   "insert_after": "retail_item_section",
+   "label": "Item Type",
+   "module": "Custom Erpnext",
+   "name": "Item-item_type",
+   "dt": "Item",
+   "options": "Stock Item\nService Item\nComposite Item"
+  },
+  {
+   "fieldname": "main_group",
+   "fieldtype": "Link",
+   "insert_after": "item_type",
+   "label": "Main Group",
+   "module": "Custom Erpnext",
+   "name": "Item-main_group",
+   "dt": "Item",
+   "options": "Item Group"
+  },
+  {
+   "fieldname": "sub_group",
+   "fieldtype": "Link",
+   "insert_after": "main_group",
+   "label": "Sub Group",
+   "module": "Custom Erpnext",
+   "name": "Item-sub_group",
+   "dt": "Item",
+   "options": "Item Group"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_composite",
+   "fieldtype": "Check",
+   "insert_after": "sub_group",
+   "label": "Is Composite",
+   "module": "Custom Erpnext",
+   "name": "Item-is_composite",
+   "dt": "Item"
+  },
+  {
+   "depends_on": "eval:doc.is_composite",
+   "fieldname": "composite_bundle",
+   "fieldtype": "Link",
+   "insert_after": "is_composite",
+   "label": "Product Bundle",
+   "module": "Custom Erpnext",
+   "name": "Item-composite_bundle",
+   "dt": "Item",
+   "options": "Product Bundle"
+  },
+  {
+   "fieldname": "retail_pricing_column",
+   "fieldtype": "Column Break",
+   "insert_after": "composite_bundle",
+   "module": "Custom Erpnext",
+   "name": "Item-retail_pricing_column",
+   "dt": "Item"
+  },
+  {
+   "fieldname": "max_discount",
+   "fieldtype": "Percent",
+   "insert_after": "retail_pricing_column",
+   "label": "Max Discount %",
+   "module": "Custom Erpnext",
+   "name": "Item-max_discount",
+   "dt": "Item"
+  },
+  {
+   "fieldname": "profit_margin",
+   "fieldtype": "Percent",
+   "insert_after": "max_discount",
+   "label": "Profit Margin %",
+   "module": "Custom Erpnext",
+   "name": "Item-profit_margin",
+   "dt": "Item"
+  },
+  {
+   "fieldname": "min_selling_price",
+   "fieldtype": "Currency",
+   "insert_after": "profit_margin",
+   "label": "Min Selling Price",
+   "module": "Custom Erpnext",
+   "name": "Item-min_selling_price",
+   "dt": "Item"
+  },
+  {
+   "fieldname": "max_selling_price",
+   "fieldtype": "Currency",
+   "insert_after": "min_selling_price",
+   "label": "Max Selling Price",
+   "module": "Custom Erpnext",
+   "name": "Item-max_selling_price",
+   "dt": "Item"
+  },
+  {
+   "fieldname": "retail_barcode_section",
+   "fieldtype": "Section Break",
+   "insert_after": "max_selling_price",
+   "label": "Barcode & Weight",
+   "module": "Custom Erpnext",
+   "name": "Item-retail_barcode_section",
+   "dt": "Item"
+  },
+  {
+   "fieldname": "barcode_symbology",
+   "fieldtype": "Select",
+   "insert_after": "retail_barcode_section",
+   "label": "Barcode Symbology",
+   "module": "Custom Erpnext",
+   "name": "Item-barcode_symbology",
+   "dt": "Item",
+   "options": "EAN-13\nUPC-A\nCode 128\nQR Code"
+  },
+  {
+   "fieldname": "secondary_barcode",
+   "fieldtype": "Data",
+   "insert_after": "barcode_symbology",
+   "label": "Secondary Barcode",
+   "module": "Custom Erpnext",
+   "name": "Item-secondary_barcode",
+   "dt": "Item"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_weight_based",
+   "fieldtype": "Check",
+   "insert_after": "secondary_barcode",
+   "label": "Is Weight Based",
+   "module": "Custom Erpnext",
+   "name": "Item-is_weight_based",
+   "dt": "Item"
+  },
+  {
+   "fieldname": "retail_loyalty_section",
+   "fieldtype": "Section Break",
+   "insert_after": "is_weight_based",
+   "label": "Loyalty & Attributes",
+   "module": "Custom Erpnext",
+   "name": "Item-retail_loyalty_section",
+   "dt": "Item"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_eligible_for_loyalty",
+   "fieldtype": "Check",
+   "insert_after": "retail_loyalty_section",
+   "label": "Eligible for Loyalty",
+   "module": "Custom Erpnext",
+   "name": "Item-is_eligible_for_loyalty",
+   "dt": "Item"
+  },
+  {
+   "fieldname": "points_per_purchase",
+   "fieldtype": "Int",
+   "insert_after": "is_eligible_for_loyalty",
+   "label": "Points Per Purchase",
+   "module": "Custom Erpnext",
+   "name": "Item-points_per_purchase",
+   "dt": "Item",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "retail_attributes_column",
+   "fieldtype": "Column Break",
+   "insert_after": "points_per_purchase",
+   "module": "Custom Erpnext",
+   "name": "Item-retail_attributes_column",
+   "dt": "Item"
+  },
+  {
+   "fieldname": "season",
+   "fieldtype": "Data",
+   "insert_after": "retail_attributes_column",
+   "label": "Season",
+   "module": "Custom Erpnext",
+   "name": "Item-season",
+   "dt": "Item"
+  },
+  {
+   "fieldname": "color",
+   "fieldtype": "Data",
+   "insert_after": "season",
+   "label": "Color",
+   "module": "Custom Erpnext",
+   "name": "Item-color",
+   "dt": "Item"
+  },
+  {
+   "fieldname": "size",
+   "fieldtype": "Data",
+   "insert_after": "color",
+   "label": "Size",
+   "module": "Custom Erpnext",
+   "name": "Item-size",
+   "dt": "Item"
+  },
+  {
+   "fieldname": "supplier_item_code",
+   "fieldtype": "Data",
+   "insert_after": "size",
+   "label": "Supplier Item Code",
+   "module": "Custom Erpnext",
+   "name": "Item-supplier_item_code",
+   "dt": "Item"
+  }
+ ],
+ "custom_perms": [],
+ "doctype": "Item",
+ "property_setters": [],
+ "sync_on_migrate": 1
+}

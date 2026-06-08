@@ -1,0 +1,103 @@
+{
+ "custom_fields": [
+  {
+   "fieldname": "retail_purchase_section",
+   "fieldtype": "Section Break",
+   "insert_after": "company",
+   "label": "Retail Purchase",
+   "module": "Custom Erpnext",
+   "name": "Purchase Receipt-retail_purchase_section",
+   "dt": "Purchase Receipt"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "insert_after": "retail_purchase_section",
+   "label": "Branch",
+   "module": "Custom Erpnext",
+   "name": "Purchase Receipt-branch",
+   "dt": "Purchase Receipt",
+   "options": "Company Branch",
+   "search_index": 1
+  },
+  {
+   "fieldname": "po_reference",
+   "fieldtype": "Link",
+   "insert_after": "branch",
+   "label": "Purchase Order",
+   "module": "Custom Erpnext",
+   "name": "Purchase Receipt-po_reference",
+   "dt": "Purchase Receipt",
+   "options": "Purchase Order"
+  },
+  {
+   "fieldname": "received_by",
+   "fieldtype": "Link",
+   "insert_after": "po_reference",
+   "label": "Received By",
+   "module": "Custom Erpnext",
+   "name": "Purchase Receipt-received_by",
+   "dt": "Purchase Receipt",
+   "options": "User"
+  },
+  {
+   "fieldname": "inspection_result",
+   "fieldtype": "Select",
+   "insert_after": "received_by",
+   "label": "Inspection Result",
+   "module": "Custom Erpnext",
+   "name": "Purchase Receipt-inspection_result",
+   "dt": "Purchase Receipt",
+   "options": "Passed\nFailed\nPartial"
+  },
+  {
+   "fieldname": "retail_receipt_column",
+   "fieldtype": "Column Break",
+   "insert_after": "inspection_result",
+   "module": "Custom Erpnext",
+   "name": "Purchase Receipt-retail_receipt_column",
+   "dt": "Purchase Receipt"
+  },
+  {
+   "fieldname": "condition_notes",
+   "fieldtype": "Text",
+   "insert_after": "retail_receipt_column",
+   "label": "Condition Notes",
+   "module": "Custom Erpnext",
+   "name": "Purchase Receipt-condition_notes",
+   "dt": "Purchase Receipt"
+  },
+  {
+   "fieldname": "driver_name",
+   "fieldtype": "Data",
+   "insert_after": "condition_notes",
+   "label": "Driver Name",
+   "module": "Custom Erpnext",
+   "name": "Purchase Receipt-driver_name",
+   "dt": "Purchase Receipt"
+  },
+  {
+   "fieldname": "vehicle_plate",
+   "fieldtype": "Data",
+   "insert_after": "driver_name",
+   "label": "Vehicle Plate",
+   "module": "Custom Erpnext",
+   "name": "Purchase Receipt-vehicle_plate",
+   "dt": "Purchase Receipt"
+  },
+  {
+   "fieldname": "bin_location_code",
+   "fieldtype": "Data",
+   "insert_after": "vehicle_plate",
+   "label": "Bin Location Code",
+   "module": "Custom Erpnext",
+   "name": "Purchase Receipt-bin_location_code",
+   "dt": "Purchase Receipt"
+  }
+ ],
+ "custom_perms": [],
+ "doctype": "Purchase Receipt",
+ "property_setters": [],
+ "sync_on_migrate": 1
+}

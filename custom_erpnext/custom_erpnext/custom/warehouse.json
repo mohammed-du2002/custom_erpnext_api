@@ -1,0 +1,98 @@
+{
+ "custom_fields": [
+  {
+   "fieldname": "retail_warehouse_section",
+   "fieldtype": "Section Break",
+   "insert_after": "parent_warehouse",
+   "label": "Retail Warehouse Settings",
+   "module": "Custom Erpnext",
+   "name": "Warehouse-retail_warehouse_section",
+   "dt": "Warehouse"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "insert_after": "retail_warehouse_section",
+   "label": "Company Branch",
+   "module": "Custom Erpnext",
+   "name": "Warehouse-branch",
+   "dt": "Warehouse",
+   "options": "Company Branch",
+   "search_index": 1
+  },
+  {
+   "fieldname": "retail_warehouse_type",
+   "fieldtype": "Select",
+   "in_standard_filter": 1,
+   "insert_after": "branch",
+   "label": "Warehouse Category",
+   "module": "Custom Erpnext",
+   "name": "Warehouse-retail_warehouse_type",
+   "dt": "Warehouse",
+   "options": "Central\nBranch\nTransit\nDamaged"
+  },
+  {
+   "fieldname": "location",
+   "fieldtype": "Text",
+   "insert_after": "retail_warehouse_type",
+   "label": "Location",
+   "module": "Custom Erpnext",
+   "name": "Warehouse-location",
+   "dt": "Warehouse"
+  },
+  {
+   "fieldname": "manager",
+   "fieldtype": "Link",
+   "insert_after": "location",
+   "label": "Manager",
+   "module": "Custom Erpnext",
+   "name": "Warehouse-manager",
+   "dt": "Warehouse",
+   "options": "User"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_pos_warehouse",
+   "fieldtype": "Check",
+   "insert_after": "manager",
+   "label": "Is POS Warehouse",
+   "module": "Custom Erpnext",
+   "name": "Warehouse-is_pos_warehouse",
+   "dt": "Warehouse"
+  },
+  {
+   "default": "0",
+   "fieldname": "allow_negative_stock",
+   "fieldtype": "Check",
+   "insert_after": "is_pos_warehouse",
+   "label": "Allow Negative Stock",
+   "module": "Custom Erpnext",
+   "name": "Warehouse-allow_negative_stock",
+   "dt": "Warehouse"
+  },
+  {
+   "fieldname": "bin_locations_section",
+   "fieldtype": "Section Break",
+   "insert_after": "allow_negative_stock",
+   "label": "Bin Locations",
+   "module": "Custom Erpnext",
+   "name": "Warehouse-bin_locations_section",
+   "dt": "Warehouse"
+  },
+  {
+   "fieldname": "bin_locations",
+   "fieldtype": "Table",
+   "insert_after": "bin_locations_section",
+   "label": "Bin Locations",
+   "module": "Custom Erpnext",
+   "name": "Warehouse-bin_locations",
+   "dt": "Warehouse",
+   "options": "Warehouse Location"
+  }
+ ],
+ "custom_perms": [],
+ "doctype": "Warehouse",
+ "property_setters": [],
+ "sync_on_migrate": 1
+}

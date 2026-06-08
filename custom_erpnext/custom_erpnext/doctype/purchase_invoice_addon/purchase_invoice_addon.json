@@ -1,0 +1,79 @@
+{
+ "actions": [],
+ "creation": "2026-06-06 20:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "addon_type",
+  "description",
+  "amount",
+  "is_percentage",
+  "percentage",
+  "allocation_method",
+  "supplier",
+  "allocated_items"
+ ],
+ "fields": [
+  {
+   "fieldname": "addon_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Addon Type",
+   "options": "Shipping\nCustoms\nInsurance\nHandling\nOther",
+   "reqd": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Text",
+   "in_list_view": 1,
+   "label": "Description"
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Amount"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_percentage",
+   "fieldtype": "Check",
+   "label": "Is Percentage"
+  },
+  {
+   "fieldname": "percentage",
+   "fieldtype": "Percent",
+   "label": "Percentage"
+  },
+  {
+   "fieldname": "allocation_method",
+   "fieldtype": "Select",
+   "label": "Allocation Method",
+   "options": "By Quantity\nBy Value\nBy Weight\nManual"
+  },
+  {
+   "fieldname": "supplier",
+   "fieldtype": "Link",
+   "label": "Supplier",
+   "options": "Supplier"
+  },
+  {
+   "fieldname": "allocated_items",
+   "fieldtype": "Small Text",
+   "label": "Allocated Items"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-06-06 20:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Custom Erpnext",
+ "name": "Purchase Invoice Addon",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

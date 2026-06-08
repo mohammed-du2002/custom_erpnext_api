@@ -1,0 +1,28 @@
+{
+ "custom_fields": [
+  {
+   "default": "0",
+   "fieldname": "auto_create_pr",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "insert_after": "material_request_type",
+   "label": "Auto Create Purchase Request",
+   "module": "Custom Erpnext",
+   "name": "Item Reorder-auto_create_pr",
+   "dt": "Item Reorder"
+  },
+  {
+   "fieldname": "notify_users",
+   "fieldtype": "Small Text",
+   "insert_after": "auto_create_pr",
+   "label": "Notify Users",
+   "module": "Custom Erpnext",
+   "name": "Item Reorder-notify_users",
+   "dt": "Item Reorder"
+  }
+ ],
+ "custom_perms": [],
+ "doctype": "Item Reorder",
+ "property_setters": [],
+ "sync_on_migrate": 1
+}

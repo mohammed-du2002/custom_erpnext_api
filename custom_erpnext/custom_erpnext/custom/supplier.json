@@ -1,0 +1,86 @@
+{
+ "custom_fields": [
+  {
+   "fieldname": "retail_supplier_section",
+   "fieldtype": "Section Break",
+   "insert_after": "supplier_group",
+   "label": "Retail Settings",
+   "module": "Custom Erpnext",
+   "name": "Supplier-retail_supplier_section",
+   "dt": "Supplier"
+  },
+  {
+   "fieldname": "supplier_code",
+   "fieldtype": "Data",
+   "in_standard_filter": 1,
+   "insert_after": "retail_supplier_section",
+   "label": "Supplier Code",
+   "module": "Custom Erpnext",
+   "name": "Supplier-supplier_code",
+   "dt": "Supplier",
+   "unique": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "insert_after": "supplier_code",
+   "label": "Default Branch",
+   "module": "Custom Erpnext",
+   "name": "Supplier-branch",
+   "dt": "Supplier",
+   "options": "Company Branch",
+   "search_index": 1
+  },
+  {
+   "fieldname": "party_account",
+   "fieldtype": "Link",
+   "insert_after": "branch",
+   "label": "Party Account",
+   "module": "Custom Erpnext",
+   "name": "Supplier-party_account",
+   "dt": "Supplier",
+   "options": "Account"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_central",
+   "fieldtype": "Check",
+   "insert_after": "party_account",
+   "label": "Is Central Supplier",
+   "module": "Custom Erpnext",
+   "name": "Supplier-is_central",
+   "dt": "Supplier"
+  },
+  {
+   "fieldname": "retail_supplier_column",
+   "fieldtype": "Column Break",
+   "insert_after": "is_central",
+   "module": "Custom Erpnext",
+   "name": "Supplier-retail_supplier_column",
+   "dt": "Supplier"
+  },
+  {
+   "fieldname": "vat_number",
+   "fieldtype": "Data",
+   "insert_after": "retail_supplier_column",
+   "label": "VAT Number",
+   "module": "Custom Erpnext",
+   "name": "Supplier-vat_number",
+   "dt": "Supplier"
+  },
+  {
+   "fieldname": "cr_number",
+   "fieldtype": "Data",
+   "insert_after": "vat_number",
+   "label": "CR Number",
+   "module": "Custom Erpnext",
+   "name": "Supplier-cr_number",
+   "dt": "Supplier"
+  }
+ ],
+ "custom_perms": [],
+ "doctype": "Supplier",
+ "property_setters": [],
+ "sync_on_migrate": 1
+}

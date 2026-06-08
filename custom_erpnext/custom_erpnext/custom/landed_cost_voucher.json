@@ -1,0 +1,82 @@
+{
+ "custom_fields": [
+  {
+   "fieldname": "retail_lcv_section",
+   "fieldtype": "Section Break",
+   "insert_after": "company",
+   "label": "Retail Shipment",
+   "module": "Custom Erpnext",
+   "name": "Landed Cost Voucher-retail_lcv_section",
+   "dt": "Landed Cost Voucher"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "insert_after": "retail_lcv_section",
+   "label": "Branch",
+   "module": "Custom Erpnext",
+   "name": "Landed Cost Voucher-branch",
+   "dt": "Landed Cost Voucher",
+   "options": "Company Branch",
+   "search_index": 1
+  },
+  {
+   "fieldname": "shipment_number",
+   "fieldtype": "Data",
+   "insert_after": "branch",
+   "label": "Shipment Number",
+   "module": "Custom Erpnext",
+   "name": "Landed Cost Voucher-shipment_number",
+   "dt": "Landed Cost Voucher"
+  },
+  {
+   "fieldname": "carrier",
+   "fieldtype": "Data",
+   "insert_after": "shipment_number",
+   "label": "Carrier",
+   "module": "Custom Erpnext",
+   "name": "Landed Cost Voucher-carrier",
+   "dt": "Landed Cost Voucher"
+  },
+  {
+   "fieldname": "retail_lcv_column",
+   "fieldtype": "Column Break",
+   "insert_after": "carrier",
+   "module": "Custom Erpnext",
+   "name": "Landed Cost Voucher-retail_lcv_column",
+   "dt": "Landed Cost Voucher"
+  },
+  {
+   "fieldname": "customs_declaration",
+   "fieldtype": "Data",
+   "insert_after": "retail_lcv_column",
+   "label": "Customs Declaration",
+   "module": "Custom Erpnext",
+   "name": "Landed Cost Voucher-customs_declaration",
+   "dt": "Landed Cost Voucher"
+  },
+  {
+   "fieldname": "insurance_policy",
+   "fieldtype": "Data",
+   "insert_after": "customs_declaration",
+   "label": "Insurance Policy",
+   "module": "Custom Erpnext",
+   "name": "Landed Cost Voucher-insurance_policy",
+   "dt": "Landed Cost Voucher"
+  },
+  {
+   "fieldname": "actual_arrival_date",
+   "fieldtype": "Date",
+   "insert_after": "insurance_policy",
+   "label": "Actual Arrival Date",
+   "module": "Custom Erpnext",
+   "name": "Landed Cost Voucher-actual_arrival_date",
+   "dt": "Landed Cost Voucher"
+  }
+ ],
+ "custom_perms": [],
+ "doctype": "Landed Cost Voucher",
+ "property_setters": [],
+ "sync_on_migrate": 1
+}

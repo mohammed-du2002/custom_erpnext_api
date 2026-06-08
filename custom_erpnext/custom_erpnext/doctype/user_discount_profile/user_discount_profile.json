@@ -1,0 +1,149 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "autoname": "field:user",
+ "creation": "2026-06-06 22:00:00.000000",
+ "doctype": "DocType",
+ "document_type": "Setup",
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "role_profile",
+  "column_break_1",
+  "max_discount_percent",
+  "require_approval_above",
+  "approval_authority",
+  "section_limits",
+  "daily_transaction_limit",
+  "monthly_transaction_limit",
+  "section_roles",
+  "is_cashier",
+  "is_branch_manager",
+  "pos_login_pin",
+  "section_branches",
+  "allowed_branches"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "User",
+   "options": "User",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "role_profile",
+   "fieldtype": "Link",
+   "label": "Role Profile",
+   "options": "Role Profile"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "max_discount_percent",
+   "fieldtype": "Percent",
+   "in_list_view": 1,
+   "label": "Max Discount %"
+  },
+  {
+   "fieldname": "require_approval_above",
+   "fieldtype": "Currency",
+   "label": "Require Approval Above"
+  },
+  {
+   "default": "0",
+   "fieldname": "approval_authority",
+   "fieldtype": "Check",
+   "label": "Has Approval Authority"
+  },
+  {
+   "fieldname": "section_limits",
+   "fieldtype": "Section Break",
+   "label": "Transaction Limits"
+  },
+  {
+   "fieldname": "daily_transaction_limit",
+   "fieldtype": "Currency",
+   "label": "Daily Transaction Limit"
+  },
+  {
+   "fieldname": "monthly_transaction_limit",
+   "fieldtype": "Currency",
+   "label": "Monthly Transaction Limit"
+  },
+  {
+   "fieldname": "section_roles",
+   "fieldtype": "Section Break",
+   "label": "POS Roles"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_cashier",
+   "fieldtype": "Check",
+   "label": "Is Cashier"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_branch_manager",
+   "fieldtype": "Check",
+   "label": "Is Branch Manager"
+  },
+  {
+   "fieldname": "pos_login_pin",
+   "fieldtype": "Password",
+   "label": "POS Login PIN"
+  },
+  {
+   "fieldname": "section_branches",
+   "fieldtype": "Section Break",
+   "label": "Allowed Branches"
+  },
+  {
+   "fieldname": "allowed_branches",
+   "fieldtype": "Table",
+   "label": "Allowed Branches",
+   "options": "User Branch Assignment"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-06-06 22:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Custom Erpnext",
+ "name": "User Discount Profile",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

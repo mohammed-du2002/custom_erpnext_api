@@ -1,0 +1,90 @@
+{
+ "custom_fields": [
+  {
+   "fieldname": "retail_purchase_section",
+   "fieldtype": "Section Break",
+   "insert_after": "company",
+   "label": "Retail Purchase",
+   "module": "Custom Erpnext",
+   "name": "Material Request-retail_purchase_section",
+   "dt": "Material Request"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "insert_after": "retail_purchase_section",
+   "label": "Branch",
+   "module": "Custom Erpnext",
+   "name": "Material Request-branch",
+   "dt": "Material Request",
+   "options": "Company Branch",
+   "search_index": 1
+  },
+  {
+   "fieldname": "branch_section",
+   "fieldtype": "Link",
+   "insert_after": "branch",
+   "label": "Branch Section",
+   "module": "Custom Erpnext",
+   "name": "Material Request-branch_section",
+   "dt": "Material Request",
+   "options": "Branch Section"
+  },
+  {
+   "fieldname": "source_item",
+   "fieldtype": "Link",
+   "depends_on": "eval:doc.auto_created_via_reorder",
+   "insert_after": "branch_section",
+   "label": "Source Item (Reorder)",
+   "module": "Custom Erpnext",
+   "name": "Material Request-source_item",
+   "dt": "Material Request",
+   "options": "Item",
+   "read_only": 1
+  },
+  {
+   "fieldname": "retail_approval_column",
+   "fieldtype": "Column Break",
+   "insert_after": "source_item",
+   "module": "Custom Erpnext",
+   "name": "Material Request-retail_approval_column",
+   "dt": "Material Request"
+  },
+  {
+   "default": "Draft",
+   "fieldname": "approval_status",
+   "fieldtype": "Select",
+   "in_standard_filter": 1,
+   "insert_after": "retail_approval_column",
+   "label": "Approval Status",
+   "module": "Custom Erpnext",
+   "name": "Material Request-approval_status",
+   "dt": "Material Request",
+   "options": "Draft\nPending Approval\nApproved\nRejected\nOrdered"
+  },
+  {
+   "fieldname": "approved_by",
+   "fieldtype": "Link",
+   "insert_after": "approval_status",
+   "label": "Approved By",
+   "module": "Custom Erpnext",
+   "name": "Material Request-approved_by",
+   "dt": "Material Request",
+   "options": "User"
+  },
+  {
+   "fieldname": "approval_date",
+   "fieldtype": "Datetime",
+   "insert_after": "approved_by",
+   "label": "Approval Date",
+   "module": "Custom Erpnext",
+   "name": "Material Request-approval_date",
+   "dt": "Material Request"
+  }
+ ],
+ "custom_perms": [],
+ "doctype": "Material Request",
+ "property_setters": [],
+ "sync_on_migrate": 1
+}

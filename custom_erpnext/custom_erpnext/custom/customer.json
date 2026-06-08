@@ -1,0 +1,105 @@
+{
+ "custom_fields": [
+  {
+   "fieldname": "retail_customer_section",
+   "fieldtype": "Section Break",
+   "insert_after": "territory",
+   "label": "Retail Settings",
+   "module": "Custom Erpnext",
+   "name": "Customer-retail_customer_section",
+   "dt": "Customer"
+  },
+  {
+   "fieldname": "customer_code",
+   "fieldtype": "Data",
+   "in_standard_filter": 1,
+   "insert_after": "retail_customer_section",
+   "label": "Customer Code",
+   "module": "Custom Erpnext",
+   "name": "Customer-customer_code",
+   "dt": "Customer",
+   "unique": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "insert_after": "customer_code",
+   "label": "Default Branch",
+   "module": "Custom Erpnext",
+   "name": "Customer-branch",
+   "dt": "Customer",
+   "options": "Company Branch",
+   "search_index": 1
+  },
+  {
+   "fieldname": "party_account",
+   "fieldtype": "Link",
+   "insert_after": "branch",
+   "label": "Party Account",
+   "module": "Custom Erpnext",
+   "name": "Customer-party_account",
+   "dt": "Customer",
+   "options": "Account"
+  },
+  {
+   "fieldname": "retail_customer_column",
+   "fieldtype": "Column Break",
+   "insert_after": "party_account",
+   "module": "Custom Erpnext",
+   "name": "Customer-retail_customer_column",
+   "dt": "Customer"
+  },
+  {
+   "fieldname": "max_discount_percent",
+   "fieldtype": "Percent",
+   "insert_after": "retail_customer_column",
+   "label": "Max Discount %",
+   "module": "Custom Erpnext",
+   "name": "Customer-max_discount_percent",
+   "dt": "Customer"
+  },
+  {
+   "fieldname": "credit_days",
+   "fieldtype": "Int",
+   "insert_after": "max_discount_percent",
+   "label": "Credit Days",
+   "module": "Custom Erpnext",
+   "name": "Customer-credit_days",
+   "dt": "Customer",
+   "non_negative": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "alert_on_overdue",
+   "fieldtype": "Check",
+   "insert_after": "credit_days",
+   "label": "Alert on Overdue",
+   "module": "Custom Erpnext",
+   "name": "Customer-alert_on_overdue",
+   "dt": "Customer"
+  },
+  {
+   "fieldname": "retail_identity_section",
+   "fieldtype": "Section Break",
+   "insert_after": "alert_on_overdue",
+   "label": "Identity",
+   "module": "Custom Erpnext",
+   "name": "Customer-retail_identity_section",
+   "dt": "Customer"
+  },
+  {
+   "fieldname": "id_number",
+   "fieldtype": "Data",
+   "insert_after": "retail_identity_section",
+   "label": "ID / CR Number",
+   "module": "Custom Erpnext",
+   "name": "Customer-id_number",
+   "dt": "Customer"
+  }
+ ],
+ "custom_perms": [],
+ "doctype": "Customer",
+ "property_setters": [],
+ "sync_on_migrate": 1
+}

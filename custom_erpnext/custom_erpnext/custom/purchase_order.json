@@ -1,0 +1,106 @@
+{
+ "custom_fields": [
+  {
+   "fieldname": "retail_purchase_section",
+   "fieldtype": "Section Break",
+   "insert_after": "company",
+   "label": "Retail Purchase",
+   "module": "Custom Erpnext",
+   "name": "Purchase Order-retail_purchase_section",
+   "dt": "Purchase Order"
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "insert_after": "retail_purchase_section",
+   "label": "Branch",
+   "module": "Custom Erpnext",
+   "name": "Purchase Order-branch",
+   "dt": "Purchase Order",
+   "options": "Company Branch",
+   "search_index": 1
+  },
+  {
+   "fieldname": "delivery_terms",
+   "fieldtype": "Text",
+   "insert_after": "branch",
+   "label": "Delivery Terms",
+   "module": "Custom Erpnext",
+   "name": "Purchase Order-delivery_terms",
+   "dt": "Purchase Order"
+  },
+  {
+   "fieldname": "supplier_quotation_ref",
+   "fieldtype": "Data",
+   "insert_after": "delivery_terms",
+   "label": "Supplier Quotation Ref",
+   "module": "Custom Erpnext",
+   "name": "Purchase Order-supplier_quotation_ref",
+   "dt": "Purchase Order"
+  },
+  {
+   "fieldname": "expected_delivery_date",
+   "fieldtype": "Date",
+   "insert_after": "supplier_quotation_ref",
+   "label": "Expected Delivery Date",
+   "module": "Custom Erpnext",
+   "name": "Purchase Order-expected_delivery_date",
+   "dt": "Purchase Order"
+  },
+  {
+   "fieldname": "receiving_warehouse",
+   "fieldtype": "Link",
+   "insert_after": "expected_delivery_date",
+   "label": "Receiving Warehouse",
+   "module": "Custom Erpnext",
+   "name": "Purchase Order-receiving_warehouse",
+   "dt": "Purchase Order",
+   "options": "Warehouse"
+  },
+  {
+   "fieldname": "retail_prepayment_column",
+   "fieldtype": "Column Break",
+   "insert_after": "receiving_warehouse",
+   "module": "Custom Erpnext",
+   "name": "Purchase Order-retail_prepayment_column",
+   "dt": "Purchase Order"
+  },
+  {
+   "fieldname": "prepayment_amount",
+   "fieldtype": "Currency",
+   "insert_after": "retail_prepayment_column",
+   "label": "Prepayment Amount",
+   "module": "Custom Erpnext",
+   "name": "Purchase Order-prepayment_amount",
+   "dt": "Purchase Order"
+  },
+  {
+   "fieldname": "prepayment_journal",
+   "fieldtype": "Link",
+   "insert_after": "prepayment_amount",
+   "label": "Prepayment Journal Entry",
+   "module": "Custom Erpnext",
+   "name": "Purchase Order-prepayment_journal",
+   "dt": "Purchase Order",
+   "options": "Journal Entry",
+   "read_only": 1
+  },
+  {
+   "default": "Draft",
+   "fieldname": "retail_workflow_status",
+   "fieldtype": "Select",
+   "in_standard_filter": 1,
+   "insert_after": "prepayment_journal",
+   "label": "Retail Workflow Status",
+   "module": "Custom Erpnext",
+   "name": "Purchase Order-retail_workflow_status",
+   "dt": "Purchase Order",
+   "options": "Draft\nSent\nPartially Received\nReceived\nCancelled"
+  }
+ ],
+ "custom_perms": [],
+ "doctype": "Purchase Order",
+ "property_setters": [],
+ "sync_on_migrate": 1
+}
