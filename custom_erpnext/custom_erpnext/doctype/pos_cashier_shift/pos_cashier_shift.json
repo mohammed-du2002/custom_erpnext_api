@@ -1,0 +1,249 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "autoname": "naming_series:",
+ "creation": "2026-06-27 10:00:00.000000",
+ "doctype": "DocType",
+ "document_type": "Setup",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "offline_shift_id",
+  "shift_id",
+  "status",
+  "column_break_1",
+  "company",
+  "branch",
+  "pos_device",
+  "cashier",
+  "section_timing",
+  "opening_datetime",
+  "closing_datetime",
+  "section_cash",
+  "opening_cash",
+  "expected_cash",
+  "closing_cash",
+  "variance",
+  "column_break_2",
+  "daily_sales_summary",
+  "journal_entry",
+  "gl_posted",
+  "section_sync",
+  "sync_status",
+  "sync_log",
+  "sync_time"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "PCS-.YYYY.-.#####",
+   "reqd": 1
+  },
+  {
+   "fieldname": "offline_shift_id",
+   "fieldtype": "Data",
+   "in_standard_filter": 1,
+   "label": "Offline Shift ID",
+   "reqd": 1,
+   "search_index": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "shift_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Shift ID",
+   "search_index": 1
+  },
+  {
+   "default": "Open",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Open\nClosed\nSynced"
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Branch",
+   "options": "Company Branch",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "pos_device",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "POS Device",
+   "options": "POS Device",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "cashier",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Cashier",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_timing",
+   "fieldtype": "Section Break",
+   "label": "Timing"
+  },
+  {
+   "fieldname": "opening_datetime",
+   "fieldtype": "Datetime",
+   "label": "Opening Datetime"
+  },
+  {
+   "fieldname": "closing_datetime",
+   "fieldtype": "Datetime",
+   "label": "Closing Datetime"
+  },
+  {
+   "fieldname": "section_cash",
+   "fieldtype": "Section Break",
+   "label": "Cash"
+  },
+  {
+   "fieldname": "opening_cash",
+   "fieldtype": "Currency",
+   "label": "Opening Cash"
+  },
+  {
+   "fieldname": "expected_cash",
+   "fieldtype": "Currency",
+   "label": "Expected Cash",
+   "read_only": 1
+  },
+  {
+   "fieldname": "closing_cash",
+   "fieldtype": "Currency",
+   "label": "Closing Cash"
+  },
+  {
+   "fieldname": "variance",
+   "fieldtype": "Currency",
+   "label": "Variance",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "daily_sales_summary",
+   "fieldtype": "Link",
+   "label": "Daily Sales Summary",
+   "options": "Daily Sales Summary"
+  },
+  {
+   "fieldname": "journal_entry",
+   "fieldtype": "Link",
+   "label": "Journal Entry",
+   "options": "Journal Entry",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "gl_posted",
+   "fieldtype": "Check",
+   "label": "GL Posted",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_sync",
+   "fieldtype": "Section Break",
+   "label": "Sync"
+  },
+  {
+   "default": "Pending",
+   "fieldname": "sync_status",
+   "fieldtype": "Select",
+   "in_standard_filter": 1,
+   "label": "Sync Status",
+   "options": "Pending\nSynced\nFailed"
+  },
+  {
+   "fieldname": "sync_log",
+   "fieldtype": "Small Text",
+   "label": "Sync Log"
+  },
+  {
+   "fieldname": "sync_time",
+   "fieldtype": "Datetime",
+   "label": "Sync Time",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-06-27 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Custom Erpnext",
+ "name": "POS Cashier Shift",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Sales User",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
