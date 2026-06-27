@@ -147,7 +147,7 @@ This creates:
 | **Not** System Manager | HMAC signature enforced |
 | User Permissions | All active Company Branches |
 
-### Sync Configuration (11 records)
+### Sync Configuration (12 records)
 
 | Config Name | Type | Entity | Frequency |
 |-------------|------|--------|-----------|
@@ -310,12 +310,17 @@ Authorization: token {api_key}:{api_secret}
 Content-Type: application/json
 X-Request-ID: {uuid}
 X-Timestamp: {unix}
-X-Signature: HMAC-SHA256("{timestamp}.{body}", api_secret)
+X-Signature: HMAC-SHA256("{method}\n{path}\n{query}\n{timestamp}\n{request_id}\n{body}", api_secret)
 ```
 
-**Pull endpoints:** `health_check`, `pull_branches`, `get_items_for_pos`, `pull_items`, `pull_item_prices`, `pull_customers`, `pull_warehouses`, `pull_stock`, `pull_promotions`, `pull_pos_devices`, `pull_tax_templates`
+The signature binds the HTTP method, path, query string and request id — not
+just the body. `X-Request-ID` is reused across retries and is the idempotency
+key: a replayed write returns the original response without duplicating the
+side effect.
 
-**Push endpoints:** `sync_sales_invoices`, `sync_daily_sales_summaries`, `update_stock_quantities`, `update_pos_device_status`
+**Pull endpoints:** `health_check`, `pull_branches`, `get_items_for_pos`, `pull_items`, `pull_item_prices`, `pull_customers`, `pull_warehouses`, `pull_stock`, `pull_promotions`, `pull_pos_devices`, `pull_tax_templates`, `pull_discounts`, `pull_employees`, `pull_cashier_shifts`
+
+**Push endpoints:** `sync_sales_invoices`, `sync_daily_sales_summaries`, `sync_cashier_movements`, `update_stock_quantities`, `update_pos_device_status`
 
 ---
 
@@ -327,7 +332,8 @@ X-Signature: HMAC-SHA256("{timestamp}.{body}", api_secret)
 | 403 Permission | Middleware user needs branch User Permissions |
 | 422 branch required | Pass `branch` param on branch-scoped endpoints |
 | 429 Rate limit | Increase `rate_limit_per_minute` in API Integration Settings |
-| HMAC fails | Ensure `ERPNEXT_SIGN_REQUESTS=true` and body matches signature |
+| HMAC fails | Ensure `ERPNEXT_SIGN_REQUESTS=true`; signature must cover `method\npath\nquery\ntimestamp\nrequest_id\nbody` and a reverse proxy must preserve the request path |
+| 401 X-Request-ID required | Send a unique `X-Request-ID` header on every signed request |
 | Empty pull results | Seed master data; check branch/warehouse links |
 | Scheduler not running | `sudo supervisorctl restart frappe-bench-schedule` |
 

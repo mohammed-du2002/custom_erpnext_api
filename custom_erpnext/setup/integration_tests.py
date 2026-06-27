@@ -9,6 +9,7 @@ import json
 import time
 import uuid
 from urllib.error import HTTPError, URLError
+from urllib.parse import urlparse
 from urllib.request import Request, urlopen
 
 import frappe
@@ -63,6 +64,11 @@ class IntegrationTestRunner:
 			{"page": 1, "page_size": 5},
 		)
 		self._run(
+			"pull.pull_item_groups",
+			"custom_erpnext.api.v1.pull.pull_item_groups",
+			{"page": 1, "page_size": 5},
+		)
+		self._run(
 			"pull.pull_item_prices",
 			"custom_erpnext.api.v1.pull.pull_item_prices",
 			{"company": "tsc", "page": 1, "page_size": 5},
@@ -97,6 +103,31 @@ class IntegrationTestRunner:
 			"custom_erpnext.api.v1.pull.pull_pos_devices",
 			{"branch": "BR1"},
 		)
+		self._run(
+			"pull.pull_discounts",
+			"custom_erpnext.api.v1.pull.pull_discounts",
+			{"branch": "BR1", "page": 1, "page_size": 50},
+		)
+		self._run(
+			"pull.pull_employees",
+			"custom_erpnext.api.v1.pull.pull_employees",
+			{"branch": "BR1", "page": 1, "page_size": 50},
+		)
+		self._run(
+			"pull.pull_cashier_shifts",
+			"custom_erpnext.api.v1.pull.pull_cashier_shifts",
+			{"branch": "BR1", "page": 1, "page_size": 5, "include_movements": 1},
+		)
+		self._run(
+			"pull.pull_system_settings",
+			"custom_erpnext.api.v1.pull.pull_system_settings",
+			{"branch": "BR1"},
+		)
+		self._run(
+			"pull.full_sync",
+			"custom_erpnext.api.v1.pull.full_sync",
+			{"branch": "BR1", "page": 1, "page_size": 5},
+		)
 
 	def _test_push_endpoints(self):
 		request_id = str(uuid.uuid4())
@@ -115,7 +146,7 @@ class IntegrationTestRunner:
 						"warehouse": "Stores - T",
 						"posting_date": str(frappe.utils.getdate()),
 						"is_pos": 1,
-						"submit": 0,
+						"submit": 1,
 						"items": [{"item_code": "TEST-RETAIL-ITEM", "qty": 1, "rate": 50}],
 						"payments": [{"mode_of_payment": "Cash", "amount": 50}],
 					}
@@ -181,6 +212,105 @@ class IntegrationTestRunner:
 					"detail": "TEST-POS-BR1 device not found",
 				}
 			)
+
+		self._test_cashier_movements()
+
+	def _test_cashier_movements(self):
+		if not frappe.db.exists("POS Device", {"device_id": "TEST-POS-BR1"}):
+			self.results.append(
+				{
+					"name": "push.sync_cashier_movements",
+					"passed": True,
+					"skipped": True,
+					"detail": "TEST-POS-BR1 device not found",
+				}
+			)
+			return
+
+		cashier = "cashier.br1@retail.local"
+		if not frappe.db.exists("User", cashier) or not frappe.db.get_value("User", cashier, "pos_access"):
+			cashier = "middleware@laravel.local"
+			if frappe.db.exists("User", cashier):
+				frappe.db.set_value("User", cashier, "pos_access", 1, update_modified=False)
+
+		if not frappe.db.exists("User", cashier) or not frappe.db.get_value("User", cashier, "pos_access"):
+			self.results.append(
+				{
+					"name": "push.sync_cashier_movements",
+					"passed": True,
+					"skipped": True,
+					"detail": "No POS cashier user available",
+				}
+			)
+			return
+
+		request_id = str(uuid.uuid4())
+		shift_suffix = uuid.uuid4().hex[:8]
+		offline_shift_id = f"SHIFT-TEST-{shift_suffix}"
+		open_id = f"CMV-TEST-OPEN-{shift_suffix}"
+		cash_in_id = f"CMV-TEST-IN-{shift_suffix}"
+		close_id = f"CMV-TEST-CLOSE-{shift_suffix}"
+		now = str(frappe.utils.now_datetime())
+
+		self._run(
+			"push.sync_cashier_movements",
+			"custom_erpnext.api.v1.push.sync_cashier_movements",
+			{
+				"request_id": request_id,
+				"movements": [
+					{
+						"offline_movement_id": open_id,
+						"movement_type": "Shift Open",
+						"movement_datetime": now,
+						"company": "tsc",
+						"branch": "BR1",
+						"pos_device": "TEST-POS-BR1",
+						"cashier": cashier,
+						"offline_shift_id": offline_shift_id,
+						"shift_id": f"SHIFT-{shift_suffix}",
+						"opening_balance": 500,
+					},
+					{
+						"offline_movement_id": cash_in_id,
+						"movement_type": "Cash In",
+						"movement_datetime": now,
+						"company": "tsc",
+						"branch": "BR1",
+						"pos_device": "TEST-POS-BR1",
+						"cashier": cashier,
+						"offline_shift_id": offline_shift_id,
+						"shift_id": f"SHIFT-{shift_suffix}",
+						"amount": 100,
+						"reason": "Integration test cash in",
+					},
+					{
+						"offline_movement_id": close_id,
+						"movement_type": "Shift Close",
+						"movement_datetime": now,
+						"company": "tsc",
+						"branch": "BR1",
+						"pos_device": "TEST-POS-BR1",
+						"cashier": cashier,
+						"offline_shift_id": offline_shift_id,
+						"shift_id": f"SHIFT-{shift_suffix}",
+						"closing_balance": 600,
+					},
+				],
+			},
+			expect_keys=["data"],
+		)
+
+		self._run(
+			"push.sync_cashier_movements (idempotent)",
+			"custom_erpnext.api.v1.push.sync_cashier_movements",
+			{
+				"request_id": request_id,
+				"movements": [{"offline_movement_id": open_id}],
+			},
+			validate=lambda body: body.get("message", {}).get("data", {}).get("results", [{}])[0].get(
+				"idempotent"
+			),
+		)
 
 	def _test_auth_failures(self):
 		# Invalid signature should fail when secret is configured
@@ -315,16 +445,21 @@ def _guess_site_url():
 def _http_post(base_url, method, payload, api_key, api_secret, sign=True, bad_signature=False):
 	body = json.dumps(payload, separators=(",", ":"), ensure_ascii=False)
 	url = f"{base_url}/api/method/{method}"
+	request_id = str(uuid.uuid4())
 	timestamp = str(int(time.time()))
 	headers = {
 		"Authorization": f"token {api_key}:{api_secret}",
 		"Content-Type": "application/json",
 		"Accept": "application/json",
-		"X-Request-ID": str(uuid.uuid4()),
+		"X-Request-ID": request_id,
 	}
 
 	if sign:
-		sig_payload = f"{timestamp}.{body}"
+		parsed = urlparse(url)
+		query = parsed.query or ""
+		# Canonical message must mirror the ERPNext middleware exactly:
+		# METHOD \n PATH \n QUERY \n TIMESTAMP \n REQUEST_ID \n BODY
+		sig_payload = "\n".join(["POST", parsed.path, query, timestamp, request_id, body])
 		signature = hmac.new(
 			api_secret.encode(),
 			sig_payload.encode(),

@@ -1,0 +1,392 @@
+{
+	"info": {
+		"_postman_id": "c3e8a1b2-4f5d-6a7b-8c9d-0e1f2a3b4c5d",
+		"name": "custom_erpnext — Push API (Laravel → ERPNext)",
+		"description": "Middleware push endpoints for offline POS / Laravel sync.\n\n## Fix AuthenticationError\nFrappe validates `Authorization: token {api_key}:{api_secret}` against the **User** record `middleware@laravel.local` — not ERPNext login password.\n\n1. Get current credentials (does **not** rotate secret):\n   `bench --site YOUR_SITE execute custom_erpnext.setup.laravel_integration.get_middleware_api_credentials`\n2. Set Postman collection variables `api_key` and `api_secret` exactly from that output.\n3. Header must be exactly: `token KEY:SECRET` (not Bearer).\n4. For first test set `sign_requests` = `false`. Enable `true` once token auth works.\n5. Use the same site URL as bench (`http://tsc.localhost` or your host_name).\n\n**Rotate secret:** `get_middleware_api_credentials` with `rotate_secret=1`.\n\n**ZATCA status** (pull, not push):\n`POST .../custom_erpnext.api.v1.pull.get_sales_invoice_zatca_status`",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://tsc.localhost"
+		},
+		{
+			"key": "api_key",
+			"value": "YOUR_API_KEY"
+		},
+		{
+			"key": "api_secret",
+			"value": "YOUR_API_SECRET"
+		},
+		{
+			"key": "sign_requests",
+			"value": "false"
+		},
+		{
+			"key": "request_id",
+			"value": ""
+		},
+		{
+			"key": "branch",
+			"value": "BR1"
+		},
+		{
+			"key": "company",
+			"value": "tsc"
+		},
+		{
+			"key": "warehouse",
+			"value": "Stores - T"
+		},
+		{
+			"key": "customer",
+			"value": "Test Retail Customer"
+		},
+		{
+			"key": "pos_device",
+			"value": "TEST-POS-BR1"
+		},
+		{
+			"key": "item_code",
+			"value": "TEST-RETAIL-ITEM"
+		},
+		{
+			"key": "b2b_customer",
+			"value": "ZATCA Sandbox B2B"
+		},
+		{
+			"key": "b2b_customer_address",
+			"value": "ZATCA Sandbox B2B Address-Billing"
+		}
+	],
+	"auth": {
+		"type": "noauth"
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"const apiKey = pm.collectionVariables.get('api_key');",
+					"const apiSecret = pm.collectionVariables.get('api_secret');",
+					"const signRequests = pm.collectionVariables.get('sign_requests') === 'true';",
+					"",
+					"pm.request.headers.upsert({ key: 'Authorization', value: `token ${apiKey}:${apiSecret}` });",
+					"pm.request.headers.upsert({ key: 'Accept', value: 'application/json' });",
+					"pm.request.headers.upsert({ key: 'Content-Type', value: 'application/json' });",
+					"",
+					"let requestId = pm.collectionVariables.get('request_id');",
+					"if (!requestId) {",
+					"    requestId = pm.variables.replaceIn('{{$guid}}');",
+					"}",
+					"pm.request.headers.upsert({ key: 'X-Request-ID', value: requestId });",
+					"",
+					"if (signRequests && apiSecret && apiSecret !== 'YOUR_API_SECRET') {",
+					"    const timestamp = Math.floor(Date.now() / 1000).toString();",
+					"    const body = (pm.request.body && pm.request.body.mode === 'raw' && pm.request.body.raw) ? pm.request.body.raw : '';",
+					"    const message = `${timestamp}.${body}`;",
+					"    const signature = CryptoJS.HmacSHA256(message, apiSecret).toString(CryptoJS.enc.Hex);",
+					"    pm.request.headers.upsert({ key: 'X-Timestamp', value: timestamp });",
+					"    pm.request.headers.upsert({ key: 'X-Signature', value: signature });",
+					"}"
+				]
+			}
+		}
+	],
+	"item": [
+		{
+			"name": "Sales Invoices",
+			"item": [
+				{
+					"name": "sync_sales_invoices — Create & Submit",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"invoices\": [\n    {\n      \"offline_invoice_id\": \"POS-2026-00042\",\n      \"company\": \"{{company}}\",\n      \"customer\": \"{{customer}}\",\n      \"branch\": \"{{branch}}\",\n      \"warehouse\": \"{{warehouse}}\",\n      \"pos_device\": \"{{pos_device}}\",\n      \"cashier\": \"Administrator\",\n      \"shift_id\": \"SHIFT-001\",\n      \"posting_date\": \"2026-06-06\",\n      \"is_pos\": 1,\n      \"submit\": 1,\n      \"items\": [\n        {\n          \"item_code\": \"{{item_code}}\",\n          \"qty\": 2,\n          \"rate\": 100\n        }\n      ],\n      \"payments\": [\n        {\n          \"mode_of_payment\": \"Cash\",\n          \"amount\": 230,\n          \"payment_provider\": \"Cash\"\n        }\n      ],\n      \"promotion_applied\": \"\",\n      \"remarks\": \"Postman test invoice\"\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/method/custom_erpnext.api.v1.push.sync_sales_invoices",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"custom_erpnext.api.v1.push.sync_sales_invoices"
+							]
+						},
+						"description": "Create and submit a POS Sales Invoice. Idempotent key: `offline_invoice_id` (unique in ERPNext).\n\n`warehouse` is optional — defaults from Company Branch, then POS Device.\n\n`taxes_and_charges` is optional — defaults from POS Profile, then company default template. Tax rows are applied server-side (required for ZATCA).\n\n**Payment amount** must equal invoice grand total **including VAT** (e.g. 200 + 15% = 230).\n\nResponse includes per-invoice `zatca` payload; poll pull API for async clearance."
+					},
+					"response": []
+				},
+				{
+					"name": "sync_sales_invoices — Idempotent Retry",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"invoices\": [\n    {\n      \"offline_invoice_id\": \"POS-2026-00042\"\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/method/custom_erpnext.api.v1.push.sync_sales_invoices",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"custom_erpnext.api.v1.push.sync_sales_invoices"
+							]
+						},
+						"description": "Resend only `offline_invoice_id` after a successful submit — returns `idempotent: true` with no duplicate document.\n\nFor a failed draft, resend the full invoice body to re-apply lines before submit retry."
+					},
+					"response": []
+				},
+				{
+					"name": "sync_sales_invoices — Return / Credit Note",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"invoices\": [\n    {\n      \"offline_invoice_id\": \"POS-RET-2026-00001\",\n      \"company\": \"{{company}}\",\n      \"customer\": \"{{customer}}\",\n      \"branch\": \"{{branch}}\",\n      \"pos_device\": \"{{pos_device}}\",\n      \"posting_date\": \"2026-06-06\",\n      \"is_pos\": 1,\n      \"is_return\": 1,\n      \"return_against\": \"SINV-BR1-.00001\",\n      \"return_reason\": \"Goods returned\",\n      \"submit\": 1,\n      \"items\": [\n        {\n          \"item_code\": \"{{item_code}}\",\n          \"qty\": 1,\n          \"rate\": 100\n        }\n      ],\n      \"payments\": [\n        {\n          \"mode_of_payment\": \"Cash\",\n          \"amount\": 100,\n          \"payment_provider\": \"Cash\"\n        }\n      ]\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/method/custom_erpnext.api.v1.push.sync_sales_invoices",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"custom_erpnext.api.v1.push.sync_sales_invoices"
+							]
+						},
+						"description": "Return invoice. Qty/payment amounts may be positive — server normalises sign.\n\nSet `return_against` to the original submitted Sales Invoice name. `return_reason` is mirrored to ZATCA `custom_return_reason`."
+					},
+					"response": []
+				},
+				{
+					"name": "sync_sales_invoices — B2B (with customer_address)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"invoices\": [\n    {\n      \"offline_invoice_id\": \"POS-B2B-2026-00001\",\n      \"issued_online\": 1,\n      \"company\": \"{{company}}\",\n      \"customer\": \"{{b2b_customer}}\",\n      \"customer_address\": \"{{b2b_customer_address}}\",\n      \"branch\": \"{{branch}}\",\n      \"warehouse\": \"{{warehouse}}\",\n      \"posting_date\": \"2026-06-06\",\n      \"is_pos\": 1,\n      \"submit\": 1,\n      \"taxes_and_charges\": \"VAT 15% - TSC\",\n      \"items\": [\n        {\n          \"item_code\": \"{{item_code}}\",\n          \"qty\": 1,\n          \"rate\": 100\n        }\n      ],\n      \"payments\": [\n        {\n          \"mode_of_payment\": \"Cash\",\n          \"amount\": 115,\n          \"payment_provider\": \"Cash\"\n        }\n      ]\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/method/custom_erpnext.api.v1.push.sync_sales_invoices",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"custom_erpnext.api.v1.push.sync_sales_invoices"
+							]
+						},
+						"description": "B2B invoice issued online (SRS §7.3). Requires issued_online: 1. Use real ERPNext Customer and Address names.\n\nDefaults: `{{b2b_customer}}` / `{{b2b_customer_address}}` — pull customers via `pull.pull_customers`.\n\nB2B customers need a ZATCA-compliant address (building no., district, 5-digit postal code for KSA)."
+					},
+					"response": []
+				}
+			],
+			"description": "POST `custom_erpnext.api.v1.push.sync_sales_invoices`\n\nBatches > 20 invoices are queued asynchronously (`queued: true`, `job_id`)."
+		},
+		{
+			"name": "Daily Sales",
+			"item": [
+				{
+					"name": "sync_daily_sales_summaries",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"summaries\": [\n    {\n      \"summary_date\": \"2026-06-06\",\n      \"branch\": \"{{branch}}\",\n      \"pos_device\": \"{{pos_device}}\",\n      \"cashier\": \"Administrator\",\n      \"opening_cash\": 500,\n      \"total_sales\": 5000,\n      \"total_returns\": 200,\n      \"net_sales\": 4800,\n      \"cash_sales\": 3000,\n      \"card_sales\": 1800,\n      \"other_sales\": 0,\n      \"total_discounts\": 150,\n      \"total_tax\": 626.09,\n      \"transaction_count\": 42,\n      \"closing_cash\": 800\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/method/custom_erpnext.api.v1.push.sync_daily_sales_summaries",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"custom_erpnext.api.v1.push.sync_daily_sales_summaries"
+							]
+						},
+						"description": "Upsert daily closing summary per branch + POS device + date."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cashier Movements",
+			"item": [
+				{
+					"name": "sync_cashier_movements",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"movements\": [\n    {\n      \"offline_movement_id\": \"CMV-POS-2026-00001\",\n      \"movement_type\": \"Shift Open\",\n      \"movement_datetime\": \"2026-06-27T08:00:00\",\n      \"company\": \"{{company}}\",\n      \"branch\": \"{{branch}}\",\n      \"pos_device\": \"{{pos_device}}\",\n      \"cashier\": \"Administrator\",\n      \"offline_shift_id\": \"SHIFT-POS-2026-00042\",\n      \"shift_id\": \"SHIFT-2026-00042\",\n      \"opening_balance\": 500\n    },\n    {\n      \"offline_movement_id\": \"CMV-POS-2026-00002\",\n      \"movement_type\": \"Cash In\",\n      \"movement_datetime\": \"2026-06-27T10:30:00\",\n      \"company\": \"{{company}}\",\n      \"branch\": \"{{branch}}\",\n      \"pos_device\": \"{{pos_device}}\",\n      \"cashier\": \"Administrator\",\n      \"offline_shift_id\": \"SHIFT-POS-2026-00042\",\n      \"shift_id\": \"SHIFT-2026-00042\",\n      \"amount\": 200,\n      \"reason\": \"Change fund top-up\"\n    },\n    {\n      \"offline_movement_id\": \"CMV-POS-2026-00004\",\n      \"movement_type\": \"Shift Close\",\n      \"movement_datetime\": \"2026-06-27T18:00:00\",\n      \"company\": \"{{company}}\",\n      \"branch\": \"{{branch}}\",\n      \"pos_device\": \"{{pos_device}}\",\n      \"cashier\": \"Administrator\",\n      \"offline_shift_id\": \"SHIFT-POS-2026-00042\",\n      \"shift_id\": \"SHIFT-2026-00042\",\n      \"closing_balance\": 850\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/method/custom_erpnext.api.v1.push.sync_cashier_movements",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"custom_erpnext.api.v1.push.sync_cashier_movements"
+							]
+						},
+						"description": "Sync cashier drawer movements (shift open/close, cash in/out). Idempotent via offline_movement_id."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Stock",
+			"item": [
+				{
+					"name": "update_stock_quantities",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"branch\": \"{{branch}}\",\n  \"warehouse\": \"{{warehouse}}\",\n  \"apply\": 0,\n  \"stock_updates\": [\n    {\n      \"item_code\": \"{{item_code}}\",\n      \"qty\": 100\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/method/custom_erpnext.api.v1.push.update_stock_quantities",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"custom_erpnext.api.v1.push.update_stock_quantities"
+							]
+						},
+						"description": "Stock reconciliation read — compares POS qty vs ERP Bin `actual_qty`.\n\nPass `branch` (warehouse resolved from branch) or `warehouse` directly. Warehouse must be linked to a branch; when both are sent they must match. Set `apply: 1` to submit Stock Reconciliation."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "POS Devices",
+			"item": [
+				{
+					"name": "update_pos_device_status",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"device_id\": \"{{pos_device}}\",\n  \"is_online\": 1,\n  \"last_sync_time\": \"2026-06-06 18:30:00\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/method/custom_erpnext.api.v1.push.update_pos_device_status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"custom_erpnext.api.v1.push.update_pos_device_status"
+							]
+						},
+						"description": "POS device heartbeat. `device_id` matches POS Device.device_id. Caller must have branch access for the device's branch."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Related (Pull) — ZATCA Status",
+			"item": [
+				{
+					"name": "get_sales_invoice_zatca_status",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"offline_invoice_id\": \"POS-2026-00042\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/method/custom_erpnext.api.v1.pull.get_sales_invoice_zatca_status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"method",
+								"custom_erpnext.api.v1.pull.get_sales_invoice_zatca_status"
+							]
+						},
+						"description": "Poll ZATCA clearance after push. Not a push endpoint — included for the Laravel retry loop.\n\nLookup by `offline_invoice_id` or `sales_invoice`."
+					},
+					"response": []
+				}
+			],
+			"description": "Read-only companion endpoint for post-push ZATCA polling."
+		}
+	]
+}

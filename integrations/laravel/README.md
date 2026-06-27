@@ -86,6 +86,11 @@ php artisan erpnext:sync-test --branch=BR1 --push
 | `pullPromotions()` | `pull.pull_promotions` | Promotions |
 | `pullPosDevices()` | `pull.pull_pos_devices` | POS devices |
 | `pullTaxTemplates()` | `pull.pull_tax_templates` | Tax templates |
+| `pullDiscounts()` | `pull.pull_discounts` | User discount limits |
+| `pullEmployees()` | `pull.pull_employees` | Employees / POS cashiers |
+| `pullCashierShifts($branch)` | `pull.pull_cashier_shifts` | Cashier shifts + movements |
+| `pullSystemSettings($branch)` | `pull.pull_system_settings` | Branches, devices, tax, payments |
+| `fullSync($branch)` | `pull.full_sync` | Day-open full master sync bundle |
 
 ### Push (Laravel → ERP)
 
@@ -93,6 +98,7 @@ php artisan erpnext:sync-test --branch=BR1 --push
 |--------|-------------|---------|
 | `syncSalesInvoices($invoices)` | `push.sync_sales_invoices` | Offline SI sync |
 | `syncDailySalesSummaries($summaries)` | `push.sync_daily_sales_summaries` | Daily closing |
+| `syncCashierMovements($movements)` | `push.sync_cashier_movements` | Cashier drawer movements |
 | `updateStockQuantities($updates)` | `push.update_stock_quantities` | Stock reconciliation |
 | `updatePosDeviceStatus()` | `push.update_pos_device_status` | Device heartbeat |
 
@@ -104,13 +110,22 @@ All requests use Frappe token auth:
 Authorization: token {api_key}:{api_secret}
 ```
 
-When `ERPNEXT_SIGN_REQUESTS=true`, POST bodies are signed:
+When `ERPNEXT_SIGN_REQUESTS=true`, requests are signed over a canonical string
+that binds the method, path, query, timestamp and request id (not just the body),
+so a captured signature cannot be replayed against another endpoint or with a
+forged request id:
 
 ```
 X-Timestamp: {unix_timestamp}
-X-Signature: HMAC-SHA256("{timestamp}.{raw_json_body}", api_secret)
 X-Request-ID: {uuid}
+X-Signature: HMAC-SHA256("{method}\n{path}\n{query}\n{timestamp}\n{request_id}\n{raw_json_body}", api_secret)
 ```
+
+`{method}` is upper-case (`POST`), `{path}` is the URL path (e.g.
+`/api/method/custom_erpnext.api.v1.push.sync_sales_invoices`), and `{query}` is
+the raw query string (empty for POST). The `X-Request-ID` is reused across HTTP
+retries and is the idempotency key: replaying a write request with the same id
+returns the original response without re-running the side effect.
 
 ## Push payload examples
 
@@ -154,6 +169,26 @@ X-Request-ID: {uuid}
   }]
 }
 ```
+
+### Cashier Movements
+
+```json
+{
+  "movements": [{
+    "offline_movement_id": "CMV-POS-2026-00001",
+    "movement_type": "Shift Open",
+    "movement_datetime": "2026-06-27T08:00:00",
+    "company": "tsc",
+    "branch": "BR1",
+    "pos_device": "POS-BR1-01",
+    "cashier": "cashier.br1@retail.local",
+    "offline_shift_id": "SHIFT-POS-2026-00042",
+    "opening_balance": 500
+  }]
+}
+```
+
+Copy `integrations/laravel/examples/PushCashierMovementsToErp.php` into your Laravel `app/Jobs/` folder for queue-based push with retries.
 
 ## Response format
 

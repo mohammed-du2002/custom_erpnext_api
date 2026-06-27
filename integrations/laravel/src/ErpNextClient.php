@@ -42,7 +42,7 @@ class ErpNextClient
         $body = json_encode($params, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         $endpoint = $this->baseUrl.'/api/method/'.$method;
 
-        $response = $this->signedRequest($requestId, $body)
+        $response = $this->signedRequest('POST', $endpoint, $requestId, $body)
             ->withBody($body, 'application/json')
             ->post($endpoint);
 
@@ -59,7 +59,7 @@ class ErpNextClient
         return $this->call('custom_erpnext.api.v1.push.'.$method, $params, $requestId);
     }
 
-    protected function signedRequest(string $requestId, string $rawBody): PendingRequest
+    protected function signedRequest(string $httpMethod, string $endpoint, string $requestId, string $rawBody): PendingRequest
     {
         $headers = [
             'Authorization' => 'token '.$this->apiKey.':'.$this->apiSecret,
@@ -71,13 +71,37 @@ class ErpNextClient
         if ($this->signRequests && $this->apiSecret !== '') {
             $timestamp = (string) time();
             $headers['X-Timestamp'] = $timestamp;
-            $headers['X-Signature'] = hash_hmac('sha256', $timestamp.'.'.$rawBody, $this->apiSecret);
+            $headers['X-Signature'] = $this->sign($httpMethod, $endpoint, $timestamp, $requestId, $rawBody);
         }
 
         return Http::timeout($this->timeout)
             ->retry($this->retryTimes, $this->retrySleepMs, throw: false)
             ->withHeaders($headers)
             ->asJson();
+    }
+
+    /**
+     * Build the request signature over a canonical string that binds the HTTP
+     * method, path, query string and request nonce — not just the body — so a
+     * captured signature cannot be replayed against a different endpoint or
+     * with a forged request id. Must mirror the ERPNext middleware exactly.
+     */
+    protected function sign(string $httpMethod, string $endpoint, string $timestamp, string $requestId, string $rawBody): string
+    {
+        $parts = parse_url($endpoint);
+        $path = $parts['path'] ?? '';
+        $query = $parts['query'] ?? '';
+
+        $message = implode("\n", [
+            strtoupper($httpMethod),
+            $path,
+            $query,
+            $timestamp,
+            $requestId,
+            $rawBody,
+        ]);
+
+        return hash_hmac('sha256', $message, $this->apiSecret);
     }
 
     protected function parseResponse(Response $response): array

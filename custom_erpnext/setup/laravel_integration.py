@@ -4,6 +4,7 @@
 """Bootstrap ERPNext side of Laravel Middleware integration."""
 
 import frappe
+from frappe.utils import cint
 
 INTEGRATION_USER = "middleware@laravel.local"
 INTEGRATION_NAME = "Laravel Middleware"
@@ -31,7 +32,7 @@ DEFAULT_SYNC_CONFIGS = [
 		"config_name": "Pull Customers",
 		"sync_type": "Pull (ERP→POS)",
 		"entity": "Customer",
-		"frequency": "Hourly",
+		"frequency": "Every 10 Minutes",
 		"batch_size": 100,
 		"timeout_seconds": 60,
 		"retry_attempts": 3,
@@ -58,7 +59,7 @@ DEFAULT_SYNC_CONFIGS = [
 		"config_name": "Pull Promotions",
 		"sync_type": "Pull (ERP→POS)",
 		"entity": "Promotion",
-		"frequency": "Hourly",
+		"frequency": "Every 10 Minutes",
 		"batch_size": 50,
 		"timeout_seconds": 60,
 		"retry_attempts": 3,
@@ -69,6 +70,24 @@ DEFAULT_SYNC_CONFIGS = [
 		"entity": "Tax",
 		"frequency": "Daily",
 		"batch_size": 50,
+		"timeout_seconds": 60,
+		"retry_attempts": 3,
+	},
+	{
+		"config_name": "Pull Discounts",
+		"sync_type": "Pull (ERP→POS)",
+		"entity": "Discount",
+		"frequency": "Every 10 Minutes",
+		"batch_size": 100,
+		"timeout_seconds": 60,
+		"retry_attempts": 3,
+	},
+	{
+		"config_name": "Pull Employees",
+		"sync_type": "Pull (ERP→POS)",
+		"entity": "All",
+		"frequency": "Hourly",
+		"batch_size": 100,
 		"timeout_seconds": 60,
 		"retry_attempts": 3,
 	},
@@ -91,6 +110,15 @@ DEFAULT_SYNC_CONFIGS = [
 		"retry_attempts": 3,
 	},
 	{
+		"config_name": "Push Cashier Movements",
+		"sync_type": "Push (POS→ERP)",
+		"entity": "Cashier Movement",
+		"frequency": "Manual",
+		"batch_size": 50,
+		"timeout_seconds": 60,
+		"retry_attempts": 5,
+	},
+	{
 		"config_name": "Urgent Item Changes",
 		"sync_type": "Urgent",
 		"entity": "Item",
@@ -108,9 +136,46 @@ DEFAULT_SYNC_CONFIGS = [
 		"timeout_seconds": 30,
 		"retry_attempts": 3,
 	},
+	{
+		"config_name": "Urgent Customer Changes",
+		"sync_type": "Urgent",
+		"entity": "Customer",
+		"frequency": "Real-time",
+		"batch_size": 1,
+		"timeout_seconds": 30,
+		"retry_attempts": 3,
+	},
+	{
+		"config_name": "Urgent Promotion Changes",
+		"sync_type": "Urgent",
+		"entity": "Promotion",
+		"frequency": "Real-time",
+		"batch_size": 1,
+		"timeout_seconds": 30,
+		"retry_attempts": 3,
+	},
+	{
+		"config_name": "Urgent Discount Changes",
+		"sync_type": "Urgent",
+		"entity": "Discount",
+		"frequency": "Real-time",
+		"batch_size": 1,
+		"timeout_seconds": 30,
+		"retry_attempts": 3,
+	},
+	{
+		"config_name": "Full Sync Day Open",
+		"sync_type": "Full Sync",
+		"entity": "All",
+		"frequency": "Manual",
+		"batch_size": 500,
+		"timeout_seconds": 300,
+		"retry_attempts": 3,
+	},
 ]
 
 
+@frappe.whitelist()
 def setup_production_integration(
 	site_url=None,
 	webhook_url=None,
@@ -141,11 +206,12 @@ def setup_laravel_integration(
 	site_url=None,
 	webhook_url=None,
 	rate_limit_per_minute=120,
+	rotate_secret=False,
 ):
 	"""Create middleware API user, keys, and integration settings."""
 	site_url = site_url or _guess_site_url()
 	user = _ensure_integration_user()
-	keys = _generate_api_keys(user)
+	keys = _generate_api_keys(user, rotate_secret=rotate_secret)
 
 	settings = _ensure_integration_settings(
 		site_url=site_url,
@@ -166,6 +232,41 @@ def setup_laravel_integration(
 		"integration_settings": settings,
 		"webhook_url": webhook_url or "",
 		"env": _build_env_snippet(site_url, keys["api_key"], keys["api_secret"], webhook_url),
+	}
+
+
+@frappe.whitelist()
+def get_middleware_api_credentials(rotate_secret=0):
+	"""Return middleware API credentials without re-running full setup.
+
+	Pass rotate_secret=1 to invalidate the previous secret and issue a new one.
+	"""
+	user = _ensure_integration_user()
+	keys = _generate_api_keys(user, rotate_secret=cint(rotate_secret))
+	fix_middleware_user_roles()
+	_sync_user_branch_access(user)
+
+	site_url = _guess_site_url()
+	_ensure_integration_settings(
+		site_url=site_url,
+		webhook_url=frappe.db.get_value("API Integration Settings", INTEGRATION_NAME, "webhook_url") or "",
+		rate_limit_per_minute=frappe.db.get_value(
+			"API Integration Settings", INTEGRATION_NAME, "rate_limit_per_minute"
+		)
+		or 120,
+		api_key=keys["api_key"],
+		api_secret=keys["api_secret"],
+	)
+	frappe.db.commit()
+
+	return {
+		"site_url": site_url,
+		"integration_user": user,
+		"api_key": keys["api_key"],
+		"api_secret": keys["api_secret"],
+		"rotated": bool(cint(rotate_secret)),
+		"auth_header": f"token {keys['api_key']}:{keys['api_secret']}",
+		"env": _build_env_snippet(site_url, keys["api_key"], keys["api_secret"]),
 	}
 
 
@@ -213,7 +314,7 @@ def _ensure_integration_user():
 			"enabled": 1,
 		}
 	)
-	for role in ("Sales User", "Stock User", "Accounts User", "Purchase User"):
+	for role in ("Sales User", "Stock User", "Stock Manager", "Accounts User", "Purchase User"):
 		doc.append("roles", {"role": role})
 	doc.insert(ignore_permissions=True)
 	doc.new_password = frappe.generate_hash(length=24)
@@ -221,12 +322,17 @@ def _ensure_integration_user():
 	return doc.name
 
 
-def _generate_api_keys(user):
+def _generate_api_keys(user, rotate_secret=False):
 	doc = frappe.get_doc("User", user)
-	api_secret = frappe.generate_hash(length=15)
 	if not doc.api_key:
 		doc.api_key = frappe.generate_hash(length=15)
-	doc.api_secret = api_secret
+
+	if rotate_secret or not doc.api_secret:
+		api_secret = frappe.generate_hash(length=15)
+		doc.api_secret = api_secret
+	else:
+		api_secret = doc.get_password("api_secret")
+
 	doc.save(ignore_permissions=True)
 	return {"api_key": doc.api_key, "api_secret": api_secret}
 
@@ -239,10 +345,11 @@ def fix_middleware_user_roles():
 	doc = frappe.get_doc("User", INTEGRATION_USER)
 	doc.roles = [row for row in doc.roles if row.role != "System Manager"]
 	existing = {row.role for row in doc.roles}
-	for role in ("Sales User", "Stock User", "Accounts User", "Purchase User"):
+	for role in ("Sales User", "Stock User", "Stock Manager", "Accounts User", "Purchase User"):
 		if role not in existing:
 			doc.append("roles", {"role": role})
 	doc.save(ignore_permissions=True)
+	_sync_user_branch_access(INTEGRATION_USER)
 
 
 def _sync_user_branch_access(user):

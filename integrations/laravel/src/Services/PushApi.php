@@ -50,4 +50,12 @@ class PushApi
             'last_sync_time' => $lastSyncTime,
         ], fn ($value) => $value !== null), $requestId);
     }
+
+    public function syncCashierMovements(array $movements, ?string $requestId = null): array
+    {
+        return $this->client->push('sync_cashier_movements', [
+            'movements' => $movements,
+            'request_id' => $requestId,
+        ], $requestId);
+    }
 }

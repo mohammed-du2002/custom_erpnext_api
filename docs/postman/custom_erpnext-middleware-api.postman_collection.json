@@ -1,0 +1,600 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+		"name": "custom_erpnext — Full Middleware API",
+		"description": "Complete Postman collection for **all** custom_erpnext Laravel middleware APIs (Pull + Push).\n\n## Quick start\n\n1. Get API credentials (does **not** rotate secret):\n   bench --site YOUR_SITE execute custom_erpnext.setup.laravel_integration.get_middleware_api_credentials\n2. Import this collection (and optional environment file).\n3. Set collection variables api_key, api_secret, base_url.\n4. Keep sign_requests = false for first run; set true to test HMAC signing.\n5. Run the collection with Collection Runner (folder order matters for push tests).\n\n## Variables\n\n- base_url: http://tsc.localhost\n- branch: BR1\n- company: tsc\n- pos_device: TEST-POS-BR1\n- item_code: RET-BREAD-WHITE\n- customer: Test Retail Customer\n- cashier: middleware@laravel.local (must have pos_access=1)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{ "key": "base_url", "value": "http://tsc.localhost" },
+		{ "key": "api_key", "value": "YOUR_API_KEY" },
+		{ "key": "api_secret", "value": "YOUR_API_SECRET" },
+		{ "key": "sign_requests", "value": "false" },
+		{ "key": "branch", "value": "BR1" },
+		{ "key": "company", "value": "tsc" },
+		{ "key": "warehouse", "value": "Stores - T" },
+		{ "key": "pos_device", "value": "TEST-POS-BR1" },
+		{ "key": "item_code", "value": "RET-BREAD-WHITE" },
+		{ "key": "customer", "value": "Test Retail Customer" },
+		{ "key": "b2b_customer", "value": "ZATCA Sandbox B2B" },
+		{ "key": "b2b_customer_address", "value": "ZATCA Sandbox B2B Address-Billing" },
+		{ "key": "cashier", "value": "middleware@laravel.local" },
+		{ "key": "last_offline_invoice_id", "value": "" },
+		{ "key": "last_offline_shift_id", "value": "" },
+		{ "key": "movement_suffix", "value": "" },
+		{ "key": "last_offline_movement_id", "value": "" },
+		{ "key": "other_branch_warehouse", "value": "" },
+		{ "key": "other_branch_pos_device", "value": "" }
+	],
+	"auth": { "type": "noauth" },
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"const apiKey = pm.collectionVariables.get('api_key');",
+					"const apiSecret = pm.collectionVariables.get('api_secret');",
+					"const signRequests = pm.collectionVariables.get('sign_requests') === 'true';",
+					"",
+					"pm.request.headers.upsert({ key: 'Authorization', value: `token ${apiKey}:${apiSecret}` });",
+					"pm.request.headers.upsert({ key: 'Accept', value: 'application/json' });",
+					"pm.request.headers.upsert({ key: 'Content-Type', value: 'application/json' });",
+					"",
+					"const requestId = pm.variables.replaceIn('{{$guid}}');",
+					"pm.request.headers.upsert({ key: 'X-Request-ID', value: requestId });",
+					"",
+					"// Dynamic variables must be set before body resolve + HMAC (request-level",
+					"// prerequest runs after this collection script and would otherwise break signing).",
+					"(function prepareRequestVariables () {",
+					"    const name = pm.info.requestName || '';",
+					"    if (name.includes('sync_cashier_movements') && name.includes('Shift Open')) {",
+					"        const suffix = pm.variables.replaceIn('{{$guid}}').substring(0, 8);",
+					"        pm.collectionVariables.set('last_offline_shift_id', `SHIFT-POSTMAN-${suffix}`);",
+					"        pm.collectionVariables.set('movement_suffix', suffix);",
+					"    }",
+					"    if (name.includes('get_sales_invoice_zatca_status')) {",
+					"        const lastId = pm.collectionVariables.get('last_offline_invoice_id');",
+					"        if (!lastId) {",
+					"            pm.collectionVariables.set('last_offline_invoice_id', 'POS-POSTMAN-SKIP-ZATCA');",
+					"        }",
+					"    }",
+					"})();",
+					"",
+					"let resolvedBody = '';",
+					"if (pm.request.body && pm.request.body.mode === 'raw' && pm.request.body.raw) {",
+					"    resolvedBody = pm.variables.replaceIn(pm.request.body.raw);",
+					"    try {",
+					"        resolvedBody = JSON.stringify(JSON.parse(resolvedBody));",
+					"        pm.request.body.update(resolvedBody);",
+					"    } catch (e) {}",
+					"}",
+					"",
+					"if (signRequests && apiSecret && apiSecret !== 'YOUR_API_SECRET') {",
+					"    const timestamp = Math.floor(Date.now() / 1000).toString();",
+					"    const path = pm.request.url.getPath();",
+					"    const query = pm.request.url.getQueryString({ encode: false }) || '';",
+					"    const httpMethod = (pm.request.method || 'POST').toUpperCase();",
+					"    const message = [httpMethod, path, query, timestamp, requestId, resolvedBody].join('\\n');",
+					"    const signature = CryptoJS.HmacSHA256(message, apiSecret).toString(CryptoJS.enc.Hex);",
+					"    pm.request.headers.upsert({ key: 'X-Timestamp', value: timestamp });",
+					"    pm.request.headers.upsert({ key: 'X-Signature', value: signature });",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"if (pm.variables.get('expect_failure') === 'true') {",
+					"    return;",
+					"}",
+					"pm.test('HTTP status is 200', function () {",
+					"    pm.response.to.have.status(200);",
+					"});",
+					"pm.test('API success=true', function () {",
+					"    const json = pm.response.json();",
+					"    pm.expect(json).to.have.property('message');",
+					"  pm.expect(json.message.success, JSON.stringify(json.message.errors || json)).to.eql(true);",
+					"});"
+				]
+			}
+		}
+	],
+	"item": [
+		{
+			"name": "01 — Pull API (ERP → Laravel/POS)",
+			"item": [
+				{
+					"name": "health_check",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } },
+						"url": "{{base_url}}/api/method/custom_erpnext.api.v1.pull.health_check",
+						"description": "Connectivity probe. Returns site name and ERPNext version."
+					}
+				},
+				{
+					"name": "pull_branches",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"company\": \"{{company}}\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": "{{base_url}}/api/method/custom_erpnext.api.v1.pull.pull_branches"
+					}
+				},
+				{
+					"name": "get_items_for_pos",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"branch\": \"{{branch}}\",\n  \"page\": 1,\n  \"page_size\": 10\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": "{{base_url}}/api/method/custom_erpnext.api.v1.pull.get_items_for_pos",
+						"description": "POS catalog with barcodes and branch-scoped prices."
+					}
+				},
+				{
+					"name": "pull_items",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"page\": 1,\n  \"page_size\": 10\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": "{{base_url}}/api/method/custom_erpnext.api.v1.pull.pull_items"
+					}
+				},
+				{
+					"name": "pull_item_groups",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"page\": 1,\n  \"page_size\": 20\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": "{{base_url}}/api/method/custom_erpnext.api.v1.pull.pull_item_groups"
+					}
+				},
+				{
+					"name": "pull_item_prices",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"company\": \"{{company}}\",\n  \"page\": 1,\n  \"page_size\": 20\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": "{{base_url}}/api/method/custom_erpnext.api.v1.pull.pull_item_prices"
+					}
+				},
+				{
+					"name": "pull_customers",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"branch\": \"{{branch}}\",\n  \"company\": \"{{company}}\",\n  \"page\": 1,\n  \"page_size\": 20\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": "{{base_url}}/api/method/custom_erpnext.api.v1.pull.pull_customers"
+					}
+				},
+				{
+					"name": "pull_tax_templates",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"page\": 1,\n  \"page_size\": 20\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": "{{base_url}}/api/method/custom_erpnext.api.v1.pull.pull_tax_templates"
+					}
+				},
+				{
+					"name": "pull_warehouses",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"branch\": \"{{branch}}\",\n  \"company\": \"{{company}}\",\n  \"page\": 1,\n  \"page_size\": 20\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": "{{base_url}}/api/method/custom_erpnext.api.v1.pull.pull_warehouses"
+					}
+				},
+				{
+					"name": "pull_stock",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"branch\": \"{{branch}}\",\n  \"page\": 1,\n  \"page_size\": 20\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": "{{base_url}}/api/method/custom_erpnext.api.v1.pull.pull_stock"
+					}
+				},
+				{
+					"name": "pull_promotions",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"branch\": \"{{branch}}\",\n  \"page\": 1,\n  \"page_size\": 20\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": "{{base_url}}/api/method/custom_erpnext.api.v1.pull.pull_promotions"
+					}
+				},
+				{
+					"name": "pull_pos_devices",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"branch\": \"{{branch}}\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": "{{base_url}}/api/method/custom_erpnext.api.v1.pull.pull_pos_devices"
+					}
+				},
+				{
+					"name": "pull_discounts",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"branch\": \"{{branch}}\",\n  \"page\": 1,\n  \"page_size\": 50\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": "{{base_url}}/api/method/custom_erpnext.api.v1.pull.pull_discounts"
+					}
+				},
+				{
+					"name": "pull_employees",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"branch\": \"{{branch}}\",\n  \"company\": \"{{company}}\",\n  \"page\": 1,\n  \"page_size\": 50\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": "{{base_url}}/api/method/custom_erpnext.api.v1.pull.pull_employees"
+					}
+				},
+				{
+					"name": "pull_cashier_shifts",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"branch\": \"{{branch}}\",\n  \"page\": 1,\n  \"page_size\": 10,\n  \"include_movements\": 1\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": "{{base_url}}/api/method/custom_erpnext.api.v1.pull.pull_cashier_shifts",
+						"description": "Branch-scoped cashier shifts. Omitting `branch` auto-filters to the caller's allowed branches (not all branches)."
+					}
+				},
+				{
+					"name": "pull_cashier_shifts — branch omitted (auto-scope)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"page\": 1,\n  \"page_size\": 10,\n  \"include_movements\": 0\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": "{{base_url}}/api/method/custom_erpnext.api.v1.pull.pull_cashier_shifts",
+						"description": "Returns shifts only from branches the middleware user may access."
+					}
+				},
+				{
+					"name": "pull_system_settings",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"branch\": \"{{branch}}\",\n  \"company\": \"{{company}}\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": "{{base_url}}/api/method/custom_erpnext.api.v1.pull.pull_system_settings",
+						"description": "Day-open settings bundle: branches, devices, tax, employees, payment methods, warehouses."
+					}
+				},
+				{
+					"name": "full_sync (day open)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"branch\": \"{{branch}}\",\n  \"page\": 1,\n  \"page_size\": 20\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": "{{base_url}}/api/method/custom_erpnext.api.v1.pull.full_sync",
+						"description": "SRS §5.1.2 full master sync bundle for day open. Paginate using meta.total_pages."
+					}
+				},
+				{
+					"name": "get_sales_invoice_zatca_status",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"offline_invoice_id\": \"{{last_offline_invoice_id}}\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": "{{base_url}}/api/method/custom_erpnext.api.v1.pull.get_sales_invoice_zatca_status",
+						"description": "Poll ZATCA status after push. Set `last_offline_invoice_id` from sales invoice push test."
+					}
+				}
+			],
+			"description": "All pull endpoints — Laravel calls ERPNext to download master data."
+		},
+		{
+			"name": "02 — Push API (Laravel/POS → ERP)",
+			"item": [
+				{
+					"name": "Sales Invoices",
+					"item": [
+						{
+							"name": "sync_sales_invoices — Create & Submit",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('HTTP status is 200', () => pm.response.to.have.status(200));",
+											"const json = pm.response.json();",
+											"pm.test('API success=true', () => pm.expect(json.message.success).to.eql(true));",
+											"try {",
+											"    const raw = pm.request.body.raw;",
+											"    const payload = JSON.parse(raw);",
+											"    const offlineId = payload.invoices[0].offline_invoice_id;",
+											"    pm.collectionVariables.set('last_offline_invoice_id', offlineId);",
+											"} catch (e) {}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"invoices\": [\n    {\n      \"offline_invoice_id\": \"POS-POSTMAN-{{$guid}}\",\n      \"company\": \"{{company}}\",\n      \"customer\": \"{{customer}}\",\n      \"branch\": \"{{branch}}\",\n      \"warehouse\": \"{{warehouse}}\",\n      \"pos_device\": \"{{pos_device}}\",\n      \"cashier\": \"{{cashier}}\",\n      \"shift_id\": \"SHIFT-POSTMAN-001\",\n      \"posting_date\": \"2026-06-27\",\n      \"is_pos\": 1,\n      \"submit\": 1,\n      \"items\": [\n        {\n          \"item_code\": \"{{item_code}}\",\n          \"qty\": 1,\n          \"rate\": 10\n        }\n      ],\n      \"payments\": [\n        {\n          \"mode_of_payment\": \"Cash\",\n          \"amount\": 11.5,\n          \"payment_provider\": \"Cash\"\n        }\n      ],\n      \"remarks\": \"Postman middleware API test\"\n    }\n  ]\n}",
+									"options": { "raw": { "language": "json" } }
+								},
+								"url": "{{base_url}}/api/method/custom_erpnext.api.v1.push.sync_sales_invoices",
+								"description": "Creates and submits a POS invoice. Payment must include 15% VAT (10 + 1.5 = 11.5). Saves offline_invoice_id for ZATCA poll."
+							}
+						},
+						{
+							"name": "sync_sales_invoices — Idempotent Retry",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"invoices\": [\n    {\n      \"offline_invoice_id\": \"{{last_offline_invoice_id}}\"\n    }\n  ]\n}",
+									"options": { "raw": { "language": "json" } }
+								},
+								"url": "{{base_url}}/api/method/custom_erpnext.api.v1.push.sync_sales_invoices",
+								"description": "Run after Create & Submit. Returns idempotent=true without duplicate."
+							}
+						},
+						{
+							"name": "sync_sales_invoices — B2B (with address)",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"invoices\": [\n    {\n      \"offline_invoice_id\": \"POS-B2B-POSTMAN-{{$guid}}\",\n      \"issued_online\": 1,\n      \"company\": \"{{company}}\",\n      \"customer\": \"{{b2b_customer}}\",\n      \"customer_address\": \"{{b2b_customer_address}}\",\n      \"branch\": \"{{branch}}\",\n      \"warehouse\": \"{{warehouse}}\",\n      \"posting_date\": \"2026-06-27\",\n      \"is_pos\": 1,\n      \"submit\": 1,\n      \"taxes_and_charges\": \"VAT 15% - TSC\",\n      \"items\": [\n        {\n          \"item_code\": \"{{item_code}}\",\n          \"qty\": 1,\n          \"rate\": 10\n        }\n      ],\n      \"payments\": [\n        {\n          \"mode_of_payment\": \"Cash\",\n          \"amount\": 11.5,\n          \"payment_provider\": \"Cash\"\n        }\n      ]\n    }\n  ]\n}",
+									"options": { "raw": { "language": "json" } }
+								},
+								"url": "{{base_url}}/api/method/custom_erpnext.api.v1.push.sync_sales_invoices",
+								"description": "B2B invoice issued online (SRS §7.3). Requires issued_online: 1 — B2B cannot use the offline queue. Idempotency key is stored as online_invoice_id (offline_invoice_id in the payload is accepted). Requires valid b2b_customer and ZATCA-compliant address."
+							}
+						}
+					]
+				},
+				{
+					"name": "sync_daily_sales_summaries",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"summaries\": [\n    {\n      \"summary_date\": \"2026-06-27\",\n      \"branch\": \"{{branch}}\",\n      \"pos_device\": \"{{pos_device}}\",\n      \"cashier\": \"{{cashier}}\",\n      \"opening_cash\": 500,\n      \"total_sales\": 5000,\n      \"total_returns\": 0,\n      \"net_sales\": 5000,\n      \"cash_sales\": 3000,\n      \"card_sales\": 2000,\n      \"other_sales\": 0,\n      \"total_discounts\": 0,\n      \"total_tax\": 652.17,\n      \"transaction_count\": 10,\n      \"closing_cash\": 800\n    }\n  ]\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": "{{base_url}}/api/method/custom_erpnext.api.v1.push.sync_daily_sales_summaries",
+						"description": "Day-close summary upsert per branch + device + date."
+					}
+				},
+				{
+					"name": "sync_cashier_movements — Shift Open/In/Close",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('HTTP status is 200', () => pm.response.to.have.status(200));",
+									"const json = pm.response.json();",
+									"pm.test('API success=true', () => pm.expect(json.message.success).to.eql(true));",
+									"if (json.message.success && json.message.data.results && json.message.data.results[0]) {",
+									"    pm.collectionVariables.set('last_offline_movement_id', json.message.data.results[0].offline_movement_id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"movements\": [\n    {\n      \"offline_movement_id\": \"CMV-OPEN-{{movement_suffix}}\",\n      \"movement_type\": \"Shift Open\",\n      \"movement_datetime\": \"2026-06-27T08:00:00\",\n      \"company\": \"{{company}}\",\n      \"branch\": \"{{branch}}\",\n      \"pos_device\": \"{{pos_device}}\",\n      \"cashier\": \"{{cashier}}\",\n      \"offline_shift_id\": \"{{last_offline_shift_id}}\",\n      \"shift_id\": \"{{last_offline_shift_id}}\",\n      \"opening_balance\": 500\n    },\n    {\n      \"offline_movement_id\": \"CMV-IN-{{movement_suffix}}\",\n      \"movement_type\": \"Cash In\",\n      \"movement_datetime\": \"2026-06-27T10:00:00\",\n      \"company\": \"{{company}}\",\n      \"branch\": \"{{branch}}\",\n      \"pos_device\": \"{{pos_device}}\",\n      \"cashier\": \"{{cashier}}\",\n      \"offline_shift_id\": \"{{last_offline_shift_id}}\",\n      \"shift_id\": \"{{last_offline_shift_id}}\",\n      \"amount\": 100,\n      \"reason\": \"Postman test cash in\"\n    },\n    {\n      \"offline_movement_id\": \"CMV-CLOSE-{{movement_suffix}}\",\n      \"movement_type\": \"Shift Close\",\n      \"movement_datetime\": \"2026-06-27T18:00:00\",\n      \"company\": \"{{company}}\",\n      \"branch\": \"{{branch}}\",\n      \"pos_device\": \"{{pos_device}}\",\n      \"cashier\": \"{{cashier}}\",\n      \"offline_shift_id\": \"{{last_offline_shift_id}}\",\n      \"shift_id\": \"{{last_offline_shift_id}}\",\n      \"closing_balance\": 600\n    }\n  ]\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": "{{base_url}}/api/method/custom_erpnext.api.v1.push.sync_cashier_movements"
+					}
+				},
+				{
+					"name": "sync_cashier_movements — Idempotent Retry",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"movements\": [\n    {\n      \"offline_movement_id\": \"{{last_offline_movement_id}}\"\n    }\n  ]\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": "{{base_url}}/api/method/custom_erpnext.api.v1.push.sync_cashier_movements",
+						"description": "Run immediately after Shift Open/In/Close. Sends only the business key (offline_movement_id). Requires last_offline_movement_id saved from the prior response."
+					}
+				},
+				{
+					"name": "update_stock_quantities",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"branch\": \"{{branch}}\",\n  \"warehouse\": \"{{warehouse}}\",\n  \"apply\": 0,\n  \"stock_updates\": [\n    {\n      \"item_code\": \"{{item_code}}\",\n      \"qty\": 100\n    }\n  ]\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": "{{base_url}}/api/method/custom_erpnext.api.v1.push.update_stock_quantities",
+						"description": "Compare POS qty vs ERP Bin actual_qty (read-only when apply: 0). Warehouse must be linked to a branch; when both branch and warehouse are sent they must match. Set apply: 1 to create + submit Stock Reconciliation."
+					}
+				},
+				{
+					"name": "update_stock_quantities — apply reconciliation",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"request_id\": \"{{$guid}}\",\n  \"branch\": \"{{branch}}\",\n  \"apply\": 1,\n  \"stock_updates\": [\n    {\n      \"item_code\": \"{{item_code}}\",\n      \"qty\": 100\n    }\n  ]\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": "{{base_url}}/api/method/custom_erpnext.api.v1.push.update_stock_quantities",
+						"description": "Creates and submits Stock Reconciliation when variance exists. Requires Stock Manager role and branch access."
+					}
+				},
+				{
+					"name": "update_pos_device_status",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"device_id\": \"{{pos_device}}\",\n  \"is_online\": 1,\n  \"last_sync_time\": \"2026-06-27 18:30:00\"\n}",
+							"options": { "raw": { "language": "json" } }
+						},
+						"url": "{{base_url}}/api/method/custom_erpnext.api.v1.push.update_pos_device_status",
+						"description": "Device heartbeat. `device_id` must match POS Device.device_id. Caller must have branch access for the device's branch."
+					}
+				}
+			],
+			"description": "All push endpoints — POS/Laravel uploads transactions to ERPNext."
+		},
+		{
+			"name": "03 — Negative / Validation Tests",
+			"item": [
+				{
+					"name": "full_sync — missing branch (expect 422)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('HTTP status is 200 (Frappe wraps errors)', () => pm.response.to.have.status(200));",
+									"const json = pm.response.json();",
+									"pm.test('API success=false', () => pm.expect(json.message.success).to.eql(false));",
+									"pm.test('Validation error code', () => {",
+									"    const err = (json.message.errors || [])[0] || {};",
+									"    pm.expect(err.code || json.message.code).to.eql('VALIDATION_ERROR');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } },
+						"url": "{{base_url}}/api/method/custom_erpnext.api.v1.pull.full_sync"
+					}
+				},
+				{
+					"name": "health_check — bad signature (expect 401)",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.request.headers.upsert({ key: 'X-Timestamp', value: Math.floor(Date.now()/1000).toString() });",
+									"pm.request.headers.upsert({ key: 'X-Signature', value: 'invalid-signature' });"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('HTTP status is 401', () => pm.response.to.have.status(401));",
+									"const json = pm.response.json();",
+									"pm.test('API success=false', () => pm.expect(json.message.success).to.eql(false));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } },
+						"url": "{{base_url}}/api/method/custom_erpnext.api.v1.pull.health_check",
+						"description": "Sends invalid X-Signature when signature headers are present."
+					}
+				}
+			],
+			"description": "Expected failure cases — verify auth and validation."
+		}
+	]
+}

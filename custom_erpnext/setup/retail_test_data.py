@@ -93,10 +93,54 @@ POS_DEVICES = [
 	{"device_id": "POS-BR3-01", "device_name": "Dammam Counter 1", "branch": "BR3", "device_type": "Desktop"},
 ]
 
+# One cashier per branch — password: Retail@1234
+RETAIL_CASHIERS = [
+	{
+		"email": "cashier.br1@retail.local",
+		"first_name": "Cashier",
+		"last_name": "Riyadh",
+		"branch": "BR1",
+		"pos_device": "POS-BR1-01",
+		"max_discount_percent": 10,
+		"roles": ["Sales User", "Stock User"],
+	},
+	{
+		"email": "cashier.br2@retail.local",
+		"first_name": "Cashier",
+		"last_name": "Jeddah",
+		"branch": "BR2",
+		"pos_device": "POS-BR2-01",
+		"max_discount_percent": 10,
+		"roles": ["Sales User", "Stock User"],
+	},
+	{
+		"email": "cashier.br3@retail.local",
+		"first_name": "Cashier",
+		"last_name": "Dammam",
+		"branch": "BR3",
+		"pos_device": "POS-BR3-01",
+		"max_discount_percent": 10,
+		"roles": ["Sales User", "Stock User"],
+	},
+	{
+		"email": "manager.retail@retail.local",
+		"first_name": "Retail",
+		"last_name": "Manager",
+		"branch": "BR1",
+		"pos_device": None,
+		"max_discount_percent": 30,
+		"is_branch_manager": 1,
+		"approval_authority": 1,
+		"roles": ["Sales Manager", "Stock Manager", "Purchase Manager"],
+		"extra_branches": ["BR2", "BR3"],
+	},
+]
+
 # Default opening qty per item per branch warehouse
 OPENING_STOCK_QTY = 100
 
 
+@frappe.whitelist()
 def create_full_retail_test_data(company=None, with_opening_stock=True):
 	"""Seed complete retail master data. Idempotent — skips existing records."""
 	company = company or _get_company()
@@ -114,6 +158,7 @@ def create_full_retail_test_data(company=None, with_opening_stock=True):
 		"pos_devices": [],
 		"pos_profiles": [],
 		"opening_stock": [],
+		"cashiers": [],
 	}
 
 	result["item_groups"] = _ensure_item_groups()
@@ -126,6 +171,7 @@ def create_full_retail_test_data(company=None, with_opening_stock=True):
 	if with_opening_stock:
 		result["opening_stock"] = _ensure_opening_stock(company)
 
+	result["cashiers"] = _ensure_retail_cashiers()
 	_sync_branch_naming_series()
 	frappe.db.commit()
 	return result
@@ -428,6 +474,71 @@ def _ensure_opening_stock(company):
 		results.append({"branch": code, "stock_entry": se.name, "items": len(item_codes), "qty_each": OPENING_STOCK_QTY})
 
 	return results
+
+
+def _ensure_retail_cashiers():
+	"""Create one cashier per branch + a retail manager, with branch User Permissions and POS device link."""
+	from custom_erpnext.services.branch_permission_service import sync_user_branch_permissions
+
+	created = []
+	for user_def in RETAIL_CASHIERS:
+		email = user_def["email"]
+		branch = user_def["branch"]
+		extra_branches = user_def.get("extra_branches", [])
+
+		# 1. Create User
+		if not frappe.db.exists("User", email):
+			u = frappe.get_doc({
+				"doctype": "User",
+				"email": email,
+				"first_name": user_def["first_name"],
+				"last_name": user_def.get("last_name", ""),
+				"send_welcome_email": 0,
+				"enabled": 1,
+			})
+			for role in user_def["roles"]:
+				u.append("roles", {"role": role})
+			u.insert(ignore_permissions=True)
+			u.new_password = "Retail@1234"
+			u.save(ignore_permissions=True)
+
+		# 2. Set default branch on User record
+		frappe.db.set_value("User", email, "branch", branch, update_modified=False)
+
+		# 3. User Permissions — branch isolation
+		branch_rows = [{"branch": branch, "is_default": 1}]
+		for eb in extra_branches:
+			branch_rows.append({"branch": eb, "is_default": 0})
+		sync_user_branch_permissions(email, branch_rows=branch_rows)
+
+		# 4. User Discount Profile
+		if frappe.db.exists("User Discount Profile", email):
+			profile = frappe.get_doc("User Discount Profile", email)
+		else:
+			profile = frappe.get_doc({"doctype": "User Discount Profile", "user": email})
+		profile.max_discount_percent = user_def.get("max_discount_percent", 0)
+		profile.is_cashier = 1 if not user_def.get("is_branch_manager") else 0
+		profile.is_branch_manager = user_def.get("is_branch_manager", 0)
+		profile.approval_authority = user_def.get("approval_authority", 0)
+		profile.set("allowed_branches", [])
+		profile.append("allowed_branches", {"branch": branch, "is_default": 1})
+		for eb in extra_branches:
+			profile.append("allowed_branches", {"branch": eb, "is_default": 0})
+		profile.save(ignore_permissions=True)
+
+		# 5. POS device association (POS Device has no default_user field; the link
+		# is maintained from the invoice/cashier side, so we only record it here).
+		pos_device = user_def.get("pos_device")
+
+		created.append({
+			"email": email,
+			"password": "Retail@1234",
+			"branch": branch,
+			"extra_branches": extra_branches,
+			"pos_device": pos_device,
+		})
+
+	return created
 
 
 def _sync_branch_naming_series():
