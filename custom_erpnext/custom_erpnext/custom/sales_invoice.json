@@ -1,7 +1,61 @@
 {
  "custom_fields": [
   {
+   "fieldname": "retail_tab_invoice_data",
+   "fieldtype": "Tab Break",
+   "insert_after": "customer_section",
+   "label": "Invoice Data",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-retail_tab_invoice_data",
+   "dt": "Sales Invoice",
+   "translatable": 1
+  },
+  {
+   "fieldname": "branch",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "insert_after": "company",
+   "label": "Branch",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-branch",
+   "dt": "Sales Invoice",
+   "options": "Company Branch",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "retail_tab_products",
+   "fieldtype": "Tab Break",
+   "insert_after": "currency_and_price_list",
+   "label": "Products",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-retail_tab_products",
+   "dt": "Sales Invoice",
+   "translatable": 1
+  },
+  {
+   "fieldname": "retail_tab_taxes",
+   "fieldtype": "Tab Break",
+   "insert_after": "section_break_30",
+   "label": "Taxes and Charges",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-retail_tab_taxes",
+   "dt": "Sales Invoice",
+   "translatable": 1
+  },
+  {
+   "fieldname": "retail_tab_additional",
+   "fieldtype": "Tab Break",
+   "insert_after": "outstanding_amount",
+   "label": "Additional Info",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-retail_tab_additional",
+   "dt": "Sales Invoice",
+   "translatable": 1
+  },
+  {
    "fieldname": "retail_pos_section",
+   "depends_on": "eval:doc.is_pos",
    "fieldtype": "Section Break",
    "insert_after": "pos_profile",
    "label": "Retail POS",
@@ -10,22 +64,11 @@
    "dt": "Sales Invoice"
   },
   {
-   "fieldname": "branch",
-   "fieldtype": "Link",
-   "in_standard_filter": 1,
-   "insert_after": "retail_pos_section",
-   "label": "Branch",
-   "module": "Custom Erpnext",
-   "name": "Sales Invoice-branch",
-   "dt": "Sales Invoice",
-   "options": "Company Branch",
-   "search_index": 1
-  },
-  {
+   "depends_on": "eval:doc.is_pos",
    "fieldname": "pos_device",
    "fieldtype": "Link",
    "in_standard_filter": 1,
-   "insert_after": "branch",
+   "insert_after": "retail_pos_section",
    "label": "POS Device",
    "module": "Custom Erpnext",
    "name": "Sales Invoice-pos_device",
@@ -34,6 +77,7 @@
    "search_index": 1
   },
   {
+   "depends_on": "eval:doc.is_pos",
    "fieldname": "cashier",
    "fieldtype": "Link",
    "insert_after": "pos_device",
@@ -44,6 +88,7 @@
    "options": "User"
   },
   {
+   "depends_on": "eval:doc.is_pos",
    "fieldname": "shift_id",
    "fieldtype": "Data",
    "insert_after": "cashier",
@@ -53,6 +98,7 @@
    "dt": "Sales Invoice"
   },
   {
+   "depends_on": "eval:doc.is_pos",
    "fieldname": "retail_sync_column",
    "fieldtype": "Column Break",
    "insert_after": "shift_id",
@@ -61,6 +107,7 @@
    "dt": "Sales Invoice"
   },
   {
+   "depends_on": "eval:doc.is_pos",
    "fieldname": "offline_invoice_id",
    "fieldtype": "Data",
    "in_standard_filter": 1,
@@ -69,14 +116,43 @@
    "module": "Custom Erpnext",
    "name": "Sales Invoice-offline_invoice_id",
    "dt": "Sales Invoice",
-   "search_index": 1
+   "search_index": 1,
+   "unique": 1
+  },
+  {
+   "depends_on": "eval:doc.is_pos",
+   "description": "Idempotency key for B2B invoices issued online (SRS §7.3). Not used for offline queue.",
+   "fieldname": "online_invoice_id",
+   "fieldtype": "Data",
+   "in_standard_filter": 1,
+   "insert_after": "offline_invoice_id",
+   "label": "Online Invoice ID",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-online_invoice_id",
+   "dt": "Sales Invoice",
+   "search_index": 1,
+   "unique": 1
+  },
+  {
+   "default": "0",
+   "description": "Set automatically for POS/offline invoices. Used by Laravel sync filters.",
+   "fieldname": "is_pos_transaction",
+   "fieldtype": "Check",
+   "in_standard_filter": 1,
+   "insert_after": "online_invoice_id",
+   "label": "Is POS Transaction",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-is_pos_transaction",
+   "dt": "Sales Invoice",
+   "read_only": 1
   },
   {
    "default": "Pending",
+   "depends_on": "eval:doc.is_pos",
    "fieldname": "sync_status",
    "fieldtype": "Select",
    "in_standard_filter": 1,
-   "insert_after": "offline_invoice_id",
+   "insert_after": "is_pos_transaction",
    "label": "Sync Status",
    "module": "Custom Erpnext",
    "name": "Sales Invoice-sync_status",
@@ -85,6 +161,7 @@
    "search_index": 1
   },
   {
+   "depends_on": "eval:doc.is_pos",
    "fieldname": "sync_log",
    "fieldtype": "Small Text",
    "insert_after": "sync_status",
@@ -153,57 +230,80 @@
    "dt": "Sales Invoice"
   },
   {
-   "default": "0",
+   "default": "1",
    "fieldname": "is_e_invoice",
    "fieldtype": "Check",
    "insert_after": "retail_einvoice_section",
    "label": "Is E-Invoice",
    "module": "Custom Erpnext",
    "name": "Sales Invoice-is_e_invoice",
-   "dt": "Sales Invoice"
+   "dt": "Sales Invoice",
+   "read_only": 1
   },
   {
    "fieldname": "e_invoice_type",
    "fieldtype": "Select",
-   "depends_on": "eval:doc.is_e_invoice",
    "insert_after": "is_e_invoice",
    "label": "E-Invoice Type",
    "module": "Custom Erpnext",
    "name": "Sales Invoice-e_invoice_type",
    "dt": "Sales Invoice",
-   "options": "B2C\nB2B"
+   "options": "B2C\nB2B",
+   "read_only": 1
+  },
+  {
+   "fieldname": "retail_einvoice_badge",
+   "fieldtype": "HTML",
+   "insert_after": "e_invoice_type",
+   "label": "E-Invoice Badge",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-retail_einvoice_badge",
+   "dt": "Sales Invoice",
+   "options": "<div class=\"retail-einvoice-badge\"></div>"
   },
   {
    "fieldname": "pi_number",
    "fieldtype": "Data",
-   "depends_on": "eval:doc.is_e_invoice",
-   "insert_after": "e_invoice_type",
+   "insert_after": "retail_einvoice_badge",
    "label": "Tax Invoice Number",
    "module": "Custom Erpnext",
    "name": "Sales Invoice-pi_number",
-   "dt": "Sales Invoice"
+   "dt": "Sales Invoice",
+   "read_only": 1
   },
   {
    "default": "Pending",
    "fieldname": "zatca_status",
    "fieldtype": "Select",
-   "depends_on": "eval:doc.is_e_invoice",
    "insert_after": "pi_number",
    "label": "ZATCA Status",
    "module": "Custom Erpnext",
    "name": "Sales Invoice-zatca_status",
    "dt": "Sales Invoice",
-   "options": "Pending\nCleared\nReported\nRejected"
+   "options": "Pending\nProcessing\nCleared\nReported\nRejected",
+   "read_only": 1
   },
   {
-   "fieldname": "zatca_uuid",
+   "fieldname": "zatca_reference",
    "fieldtype": "Data",
-   "depends_on": "eval:doc.is_e_invoice",
    "insert_after": "zatca_status",
-   "label": "ZATCA UUID",
+   "label": "ZATCA Reference",
    "module": "Custom Erpnext",
-   "name": "Sales Invoice-zatca_uuid",
+   "name": "Sales Invoice-zatca_reference",
    "dt": "Sales Invoice",
+   "read_only": 1
+  },
+  {
+   "default": "Pending",
+   "description": "Middleware sync state for ZATCA (Laravel polling). Technical ZATCA data lives in ksa_compliance Sales Invoice Additional Fields.",
+   "fieldname": "zatca_sync_status",
+   "fieldtype": "Select",
+   "insert_after": "zatca_reference",
+   "label": "ZATCA Sync Status",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-zatca_sync_status",
+   "dt": "Sales Invoice",
+   "options": "Pending\nProcessing\nSynced\nFailed",
    "read_only": 1
   },
   {
@@ -290,46 +390,463 @@
    "options": "Pending\nOut for Delivery\nDelivered\nReturned"
   },
   {
-   "fieldname": "retail_approval_section",
+   "fieldname": "retail_invoice_status_display",
+   "fieldtype": "HTML",
+   "insert_after": "currency",
+   "label": "Invoice Status",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-retail_invoice_status_display",
+   "dt": "Sales Invoice",
+   "options": "<div class=\"retail-invoice-status-display\"></div>"
+  },
+  {
+   "fieldname": "retail_invoice_number",
+   "fieldtype": "HTML",
+   "insert_after": "naming_series",
+   "label": "Invoice Number",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-retail_invoice_number",
+   "dt": "Sales Invoice",
+   "options": "<div class=\"retail-invoice-number-display\"></div>",
+   "translatable": 1
+  },
+  {
+   "fieldname": "retail_customer_number",
+   "fieldtype": "Data",
+   "insert_after": "customer",
+   "label": "Customer Number",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-retail_customer_number",
+   "dt": "Sales Invoice",
+   "read_only": 1,
+   "translatable": 1
+  },
+  {
+   "default": "Credit",
+   "fieldname": "payment_method",
+   "fieldtype": "Select",
+   "insert_after": "address_display",
+   "label": "Payment Method",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-payment_method",
+   "dt": "Sales Invoice",
+   "options": "Cash\nCredit\nBank Transfer\nCard\nWallet\nTabby\nTamara",
+   "translatable": 1
+  },
+  {
+   "fieldname": "sales_representative",
+   "fieldtype": "Link",
+   "insert_after": "cost_center",
+   "label": "Sales Representative",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-sales_representative",
+   "dt": "Sales Invoice",
+   "options": "Sales Person",
+   "translatable": 1
+  },
+  {
+   "fieldname": "retail_footer_section",
    "fieldtype": "Section Break",
-   "insert_after": "delivery_status",
-   "label": "Approval",
+   "insert_after": "retail_bottom_layout_break",
+   "label": "Footer",
    "module": "Custom Erpnext",
-   "name": "Sales Invoice-retail_approval_section",
+   "name": "Sales Invoice-retail_footer_section",
    "dt": "Sales Invoice"
   },
   {
-   "fieldname": "approved_by",
-   "fieldtype": "Link",
-   "insert_after": "retail_approval_section",
-   "label": "Approved By",
+   "fieldname": "internal_notes",
+   "fieldtype": "Small Text",
+   "insert_after": "retail_footer_section",
+   "description": "Internal notes not shown to the customer",
+   "label": "Internal Notes",
    "module": "Custom Erpnext",
-   "name": "Sales Invoice-approved_by",
+   "name": "Sales Invoice-internal_notes",
    "dt": "Sales Invoice",
-   "options": "User"
+   "translatable": 1
   },
   {
-   "fieldname": "approval_date",
-   "fieldtype": "Datetime",
-   "insert_after": "approved_by",
-   "label": "Approval Date",
+   "fieldname": "retail_summary_section",
+   "fieldtype": "Section Break",
+   "insert_after": "section_break_43",
+   "label": "Amount Summary",
    "module": "Custom Erpnext",
-   "name": "Sales Invoice-approval_date",
+   "name": "Sales Invoice-retail_summary_section",
+   "dt": "Sales Invoice",
+   "translatable": 1
+  },
+  {
+   "fieldname": "retail_financial_summary",
+   "fieldtype": "HTML",
+   "insert_after": "retail_summary_section",
+   "label": "Financial Summary",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-retail_financial_summary",
+   "dt": "Sales Invoice",
+   "options": "<div class=\"retail-financial-summary\"></div>"
+  },
+  {
+   "fieldname": "retail_bottom_layout_break",
+   "fieldtype": "Column Break",
+   "insert_after": "retail_financial_summary",
+   "module": "Custom Erpnext",
+   "name": "Sales Invoice-retail_bottom_layout_break",
    "dt": "Sales Invoice"
-  },
-  {
-   "fieldname": "discount_authorized_by",
-   "fieldtype": "Link",
-   "insert_after": "approval_date",
-   "label": "Discount Authorized By",
-   "module": "Custom Erpnext",
-   "name": "Sales Invoice-discount_authorized_by",
-   "dt": "Sales Invoice",
-   "options": "User"
   }
  ],
  "custom_perms": [],
  "doctype": "Sales Invoice",
- "property_setters": [],
+ "property_setters": [
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "naming_series",
+   "module": "Custom Erpnext",
+   "property": "read_only",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "due_date",
+   "module": "Custom Erpnext",
+   "property": "reqd",
+   "property_type": "Check",
+   "value": "0"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "taxes_and_charges",
+   "module": "Custom Erpnext",
+   "property": "reqd",
+   "property_type": "Check",
+   "value": "0"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "tax_category",
+   "module": "Custom Erpnext",
+   "property": "reqd",
+   "property_type": "Check",
+   "value": "0"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "update_stock",
+   "module": "Custom Erpnext",
+   "property": "default",
+   "property_type": "Text",
+   "value": "1"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "update_stock",
+   "module": "Custom Erpnext",
+   "property": "read_only",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "update_stock",
+   "module": "Custom Erpnext",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "set_warehouse",
+   "module": "Custom Erpnext",
+   "property": "read_only",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "disable_rounded_total",
+   "module": "Custom Erpnext",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "disable_rounded_total",
+   "module": "Custom Erpnext",
+   "property": "default",
+   "property_type": "Text",
+   "value": "1"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "rounding_adjustment",
+   "module": "Custom Erpnext",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "rounded_total",
+   "module": "Custom Erpnext",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "base_rounding_adjustment",
+   "module": "Custom Erpnext",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "base_rounded_total",
+   "module": "Custom Erpnext",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "is_pos",
+   "module": "Custom Erpnext",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "is_pos",
+   "module": "Custom Erpnext",
+   "property": "default",
+   "property_type": "Text",
+   "value": "0"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "pos_profile",
+   "module": "Custom Erpnext",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "is_created_using_pos",
+   "module": "Custom Erpnext",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "pos_closing_entry",
+   "module": "Custom Erpnext",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "items_section",
+   "module": "Custom Erpnext",
+   "property": "label",
+   "property_type": "Data",
+   "value": "Item Details"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "taxes_section",
+   "module": "Custom Erpnext",
+   "property": "label",
+   "property_type": "Data",
+   "value": "Taxes and Charges"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "grand_total",
+   "module": "Custom Erpnext",
+   "property": "label",
+   "property_type": "Data",
+   "value": "Total Due"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "outstanding_amount",
+   "module": "Custom Erpnext",
+   "property": "label",
+   "property_type": "Data",
+   "value": "Remaining Amount"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "paid_amount",
+   "module": "Custom Erpnext",
+   "property": "label",
+   "property_type": "Data",
+   "value": "Amount Paid"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "net_total",
+   "module": "Custom Erpnext",
+   "property": "label",
+   "property_type": "Data",
+   "value": "Amount Before Tax"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "total_taxes_and_charges",
+   "module": "Custom Erpnext",
+   "property": "label",
+   "property_type": "Data",
+   "value": "Total Tax"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "discount_amount",
+   "module": "Custom Erpnext",
+   "property": "label",
+   "property_type": "Data",
+   "value": "Total Discount"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "total",
+   "module": "Custom Erpnext",
+   "property": "label",
+   "property_type": "Data",
+   "value": "Total Before Discount"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "remarks",
+   "module": "Custom Erpnext",
+   "property": "label",
+   "property_type": "Data",
+   "value": "Notes"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "naming_series",
+   "module": "Custom Erpnext",
+   "property": "label",
+   "property_type": "Data",
+   "value": "Invoice Series"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "posting_date",
+   "module": "Custom Erpnext",
+   "property": "label",
+   "property_type": "Data",
+   "value": "Invoice Date"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "currency",
+   "module": "Custom Erpnext",
+   "property": "label",
+   "property_type": "Data",
+   "value": "Invoice Currency"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "tax_id",
+   "module": "Custom Erpnext",
+   "property": "label",
+   "property_type": "Data",
+   "value": "Tax Number"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "payment_terms_template",
+   "module": "Custom Erpnext",
+   "property": "label",
+   "property_type": "Data",
+   "value": "Payment Term"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "set_warehouse",
+   "module": "Custom Erpnext",
+   "property": "label",
+   "property_type": "Data",
+   "value": "Warehouse"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "address_display",
+   "module": "Custom Erpnext",
+   "property": "label",
+   "property_type": "Data",
+   "value": "Address"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "customer_address",
+   "module": "Custom Erpnext",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "customer_name",
+   "module": "Custom Erpnext",
+   "property": "hidden",
+   "property_type": "Check",
+   "value": "1"
+  },
+  {
+   "doc_type": "Sales Invoice",
+   "doctype_or_field": "DocField",
+   "field_name": "e_invoice_type",
+   "module": "Custom Erpnext",
+   "property": "label",
+   "property_type": "Data",
+   "value": "Tax Invoice Type"
+  }
+ ],
  "sync_on_migrate": 1
 }

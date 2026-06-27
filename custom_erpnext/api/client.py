@@ -52,7 +52,32 @@ def validate_user_branch_access(user, branch):
 
 	return {
 		"allowed": False,
-		"message": __("User {0} is not assigned to branch {1}").format(user, branch),
+		"message": _("User {0} is not assigned to branch {1}").format(user, branch),
+	}
+
+
+@frappe.whitelist()
+def get_customer_einvoice_type(customer):
+	"""Authoritative B2B/B2C classification for desk + POS, matching the server.
+
+	Uses ksa_compliance.is_b2b_customer when installed (VAT number OR any
+	additional buyer ID), falling back to a 15-digit tax_id check otherwise.
+	"""
+	if not customer:
+		return {"e_invoice_type": "B2C", "is_b2b": False}
+
+	from custom_erpnext.integrations.zatca.utils import is_b2b_customer
+
+	is_b2b = bool(is_b2b_customer(customer))
+	tax_id = (
+		frappe.db.get_value("Customer", customer, "custom_vat_registration_number")
+		or frappe.db.get_value("Customer", customer, "tax_id")
+		or ""
+	)
+	return {
+		"e_invoice_type": "B2B" if is_b2b else "B2C",
+		"is_b2b": is_b2b,
+		"tax_id": (tax_id or "").strip(),
 	}
 
 
@@ -65,3 +90,38 @@ def get_branch_naming_series(doctype, branch, is_return=0):
 		return {"naming_series": None, "message": _("No naming series configured for this branch")}
 
 	return {"naming_series": series}
+
+
+@frappe.whitelist()
+def validate_zatca_customer_address(customer_address=None, customer=None):
+	"""Validate buyer address for ZATCA e-invoicing (desk pre-check)."""
+	from custom_erpnext.services.address_validation_service import validate_zatca_customer_address
+
+	if not customer_address and customer:
+		from frappe.contacts.doctype.address.address import get_default_address
+
+		customer_address = get_default_address("Customer", customer)
+
+	if customer_address and not frappe.has_permission("Address", "read", customer_address):
+		frappe.throw(_("Not permitted"), frappe.PermissionError)
+
+	return validate_zatca_customer_address(customer_address)
+
+
+@frappe.whitelist()
+def get_sales_invoice_zatca_status(sales_invoice=None, offline_invoice_id=None):
+	"""Return ZATCA payload mirrored from ksa_compliance for desk/Laravel polling."""
+	from custom_erpnext.integrations.zatca.utils import get_zatca_payload_for_invoice
+
+	if not sales_invoice and offline_invoice_id:
+		from custom_erpnext.services.sales_invoice_sync_service import find_invoice_by_sync_key
+
+		sales_invoice = find_invoice_by_sync_key(offline_invoice_id)
+
+	if not sales_invoice:
+		frappe.throw(_("sales_invoice or offline_invoice_id is required"))
+
+	if not frappe.has_permission("Sales Invoice", "read", sales_invoice):
+		frappe.throw(_("Not permitted"), frappe.PermissionError)
+
+	return get_zatca_payload_for_invoice(sales_invoice)

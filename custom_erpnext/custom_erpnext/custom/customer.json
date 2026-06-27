@@ -100,6 +100,25 @@
  ],
  "custom_perms": [],
  "doctype": "Customer",
- "property_setters": [],
+ "property_setters": [
+  {
+   "doc_type": "Customer",
+   "doctype_or_field": "DocField",
+   "field_name": "tax_id",
+   "module": "Custom Erpnext",
+   "property": "label",
+   "property_type": "Data",
+   "value": "Tax Number"
+  },
+  {
+   "doc_type": "Customer",
+   "doctype_or_field": "DocField",
+   "field_name": "tax_id",
+   "module": "Custom Erpnext",
+   "property": "description",
+   "property_type": "Text",
+   "value": "Saudi VAT number — exactly 15 digits"
+  }
+ ],
  "sync_on_migrate": 1
 }

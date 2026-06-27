@@ -1,0 +1,764 @@
+/* Sales Invoice — professional retail desk form (Frappe v16 design tokens) */
+
+/* ── Page shell ── */
+.sales-invoice-retail-form .form-layout {
+	background: var(--subtle-accent);
+	padding: 0 var(--padding-xs) var(--padding-lg);
+}
+
+.sales-invoice-retail-form .form-page {
+	background: transparent;
+	box-shadow: none;
+}
+
+.sales-invoice-retail-form .std-form-layout > .form-layout > .form-page {
+	background: transparent;
+}
+
+/* ── Tabs ── */
+.sales-invoice-retail-form .form-tabs-list {
+	background: var(--card-bg);
+	border: 1px solid var(--border-color);
+	border-radius: var(--border-radius-md, 8px) var(--border-radius-md, 8px) 0 0;
+	padding: 0 var(--padding-md);
+	margin-bottom: 0;
+	border-bottom: none;
+	box-shadow: var(--card-shadow);
+}
+
+.sales-invoice-retail-form .form-tabs-list .nav-link {
+	padding: var(--padding-md) var(--padding-lg);
+	font-size: var(--text-sm, 13px);
+	font-weight: 500;
+	color: var(--text-muted);
+	border: none;
+	border-bottom: 2px solid transparent;
+	margin-bottom: -1px;
+	transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.sales-invoice-retail-form .form-tabs-list .nav-link:hover {
+	color: var(--text-color);
+}
+
+.sales-invoice-retail-form .form-tabs-list .nav-link.active {
+	color: var(--text-color);
+	font-weight: 600;
+	border-bottom-color: var(--border-primary);
+	background: transparent;
+}
+
+/* ── Quick summary bar ── */
+.sales-invoice-retail-form .retail-si-quick-bar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: stretch;
+	gap: 0;
+	background: var(--card-bg);
+	border: 1px solid var(--border-color);
+	border-top: none;
+	padding: 0;
+	margin-bottom: var(--margin-md);
+	box-shadow: var(--card-shadow);
+}
+
+.sales-invoice-retail-form .retail-si-quick-bar__item {
+	flex: 1 1 140px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 2px;
+	padding: var(--padding-md) var(--padding-lg);
+	border-inline-end: 1px solid var(--border-color);
+	min-width: 0;
+}
+
+.sales-invoice-retail-form .retail-si-quick-bar__item:last-child {
+	border-inline-end: none;
+}
+
+.sales-invoice-retail-form .retail-si-quick-bar__label {
+	font-size: var(--text-xs, 11px);
+	font-weight: 500;
+	color: var(--text-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	line-height: 1.2;
+}
+
+.sales-invoice-retail-form .retail-si-quick-bar__value {
+	font-size: var(--text-sm, 13px);
+	font-weight: 600;
+	color: var(--text-color);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	line-height: 1.4;
+}
+
+.sales-invoice-retail-form .retail-si-quick-bar__value--amount {
+	font-size: var(--text-md, 15px);
+	font-variant-numeric: tabular-nums;
+	direction: ltr;
+	text-align: start;
+}
+
+.sales-invoice-retail-form .retail-si-quick-bar__item--status {
+	flex: 0 1 auto;
+	align-items: flex-start;
+}
+
+/* ── Header cards (3-column) ── */
+.sales-invoice-retail-form .retail-si-header-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: var(--margin-md);
+	padding: var(--padding-md);
+	background: var(--card-bg);
+	border: 1px solid var(--border-color);
+	border-top: none;
+	margin-bottom: var(--margin-md);
+	box-shadow: var(--card-shadow);
+}
+
+.sales-invoice-retail-form .retail-si-card {
+	background: var(--card-bg);
+	border: 1px solid var(--border-color);
+	border-radius: var(--border-radius-md, 8px);
+	overflow: hidden;
+	box-shadow: var(--shadow-xs);
+	transition: box-shadow 0.15s ease;
+}
+
+.sales-invoice-retail-form .retail-si-card:hover {
+	box-shadow: var(--shadow-sm);
+}
+
+.sales-invoice-retail-form .retail-si-card__title {
+	display: flex;
+	align-items: center;
+	gap: var(--padding-sm);
+	font-size: var(--text-sm, 13px);
+	font-weight: 600;
+	color: var(--text-color);
+	padding: var(--padding-md) var(--padding-lg);
+	background: var(--subtle-fg);
+	border-bottom: 1px solid var(--border-color);
+}
+
+.sales-invoice-retail-form .retail-si-card__icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	border-radius: var(--border-radius-sm, 6px);
+	background: var(--control-bg);
+	color: var(--text-muted);
+	flex-shrink: 0;
+}
+
+.sales-invoice-retail-form .retail-si-card__icon .icon {
+	width: 14px;
+	height: 14px;
+}
+
+.sales-invoice-retail-form .retail-si-card__body {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: var(--margin-sm) var(--margin-md);
+	padding: var(--padding-md) var(--padding-lg) var(--padding-lg);
+}
+
+.sales-invoice-retail-form .retail-si-card__body .form-group,
+.sales-invoice-retail-form .retail-si-card__body .frappe-control {
+	margin-bottom: 0;
+	grid-column: span 1;
+}
+
+.sales-invoice-retail-form .retail-si-card__body [data-fieldname="address_display"],
+.sales-invoice-retail-form .retail-si-card__body [data-fieldname="remarks"],
+.sales-invoice-retail-form .retail-si-card__body [data-fieldname="retail_invoice_status_display"],
+.sales-invoice-retail-form .retail-si-card__body [data-fieldname="company"],
+.sales-invoice-retail-form .retail-si-card__body [data-fieldname="customer"] {
+	grid-column: 1 / -1;
+}
+
+.sales-invoice-retail-form .retail-si-card__body .control-label {
+	font-size: var(--text-xs, 11px);
+	font-weight: 500;
+	color: var(--text-muted);
+	margin-bottom: 4px;
+}
+
+/* ── Status badges (Frappe indicator-pill) ── */
+.sales-invoice-retail-form .retail-si-status-badge {
+	margin-inline-start: var(--margin-sm);
+	vertical-align: middle;
+}
+
+/* ── Readonly display fields ── */
+.sales-invoice-retail-form .retail-si-field-moved > .clearfix,
+.sales-invoice-retail-form [data-fieldname="retail_invoice_status_display"] .control-label,
+.sales-invoice-retail-form [data-fieldname="retail_invoice_number"] .control-label {
+	display: none;
+}
+
+.sales-invoice-retail-form .retail-readonly-value {
+	display: block;
+	padding: var(--padding-sm) var(--padding-md);
+	background: var(--control-bg);
+	border: 1px solid var(--border-color);
+	border-radius: var(--border-radius-sm, 6px);
+	font-size: var(--text-sm, 13px);
+	font-weight: 500;
+	color: var(--text-color);
+	min-height: var(--input-height, 28px);
+	line-height: var(--input-height, 28px);
+}
+
+.sales-invoice-retail-form [data-fieldname="address_display"] .ql-editor,
+.sales-invoice-retail-form [data-fieldname="address_display"] .control-value {
+	min-height: 60px;
+}
+
+.sales-invoice-retail-form [data-fieldname="remarks"] textarea,
+.sales-invoice-retail-form [data-fieldname="internal_notes"] textarea {
+	min-height: 80px;
+	resize: vertical;
+}
+
+/* ── Hide empty sections ── */
+.sales-invoice-retail-form .form-section.retail-si-section-empty {
+	display: none !important;
+}
+
+/* ── Main content panel ── */
+.sales-invoice-retail-form .retail-si-main-content {
+	margin-bottom: 0;
+}
+
+.sales-invoice-retail-form .retail-si-main-content > .form-section {
+	border: none;
+	padding: 0;
+	margin-bottom: var(--margin-sm);
+	box-shadow: none;
+	background: transparent;
+}
+
+.sales-invoice-retail-form .retail-si-main-panel {
+	background: var(--card-bg);
+	border: 1px solid var(--border-color);
+	border-radius: var(--border-radius-md, 8px);
+	padding: var(--padding-md);
+	margin-bottom: var(--margin-md);
+	box-shadow: var(--card-shadow);
+}
+
+/* ── Section headings ── */
+.sales-invoice-retail-form [data-fieldname="items_section"] .section-head,
+.sales-invoice-retail-form [data-fieldname="taxes_section"] .section-head,
+.sales-invoice-retail-form [data-fieldname="retail_einvoice_section"] .section-head,
+.sales-invoice-retail-form [data-fieldname="retail_summary_section"] .section-head {
+	font-size: var(--text-sm, 13px);
+	font-weight: 600;
+	color: var(--text-color);
+	padding: 0 0 var(--padding-md);
+	margin-bottom: var(--padding-md);
+	border-bottom: 1px solid var(--border-color);
+}
+
+.sales-invoice-retail-form .form-section.card-section,
+.sales-invoice-retail-form .form-section {
+	border: 1px solid var(--border-color);
+	border-radius: var(--border-radius-md, 8px);
+	padding: var(--padding-md);
+	margin-bottom: var(--margin-md);
+	background: var(--card-bg);
+	box-shadow: var(--card-shadow);
+}
+
+/* ── Items grid ── */
+.sales-invoice-retail-form [data-fieldname="items"] .form-grid {
+	border: 1px solid var(--border-color);
+	border-radius: var(--border-radius-md, 8px);
+	overflow: hidden;
+}
+
+.sales-invoice-retail-form [data-fieldname="items"] .grid-heading-row {
+	background: var(--subtle-fg);
+	font-weight: 600;
+	font-size: var(--text-xs, 12px);
+	color: var(--text-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+}
+
+.sales-invoice-retail-form [data-fieldname="items"] .grid-body {
+	min-height: 120px;
+}
+
+.sales-invoice-retail-form [data-fieldname="items"] .grid-row {
+	border-bottom: 1px solid var(--table-border-color);
+}
+
+.sales-invoice-retail-form [data-fieldname="items"] .grid-row:hover {
+	background: var(--highlight-color);
+}
+
+.sales-invoice-retail-form [data-fieldname="items"] .grid-footer {
+	padding-top: var(--padding-sm);
+}
+
+/* ── Bottom layout: summary + taxes + e-invoice ── */
+.sales-invoice-retail-form .retail-si-bottom-grid {
+	display: grid;
+	grid-template-columns: minmax(260px, 1fr) minmax(280px, 1.2fr) minmax(260px, 1fr);
+	gap: var(--margin-md);
+	margin-bottom: var(--margin-md);
+	align-items: start;
+}
+
+.sales-invoice-retail-form .retail-si-bottom-grid > .form-column {
+	width: 100% !important;
+	max-width: 100% !important;
+	flex: none !important;
+}
+
+.sales-invoice-retail-form .retail-si-summary-col {
+	position: sticky;
+	top: calc(var(--navbar-height) + var(--margin-md));
+}
+
+.sales-invoice-retail-form .retail-si-einvoice-col .form-section {
+	border-inline-start: 3px solid var(--blue-500);
+}
+
+/* ── Dedicated panel hosts (tab-independent rendering) ── */
+.sales-invoice-retail-form .retail-si-panel {
+	background: var(--card-bg);
+	border: 1px solid var(--border-color);
+	border-radius: var(--border-radius-md, 8px);
+	padding: var(--padding-md);
+	margin-bottom: var(--margin-md);
+	box-shadow: var(--card-shadow);
+}
+
+.sales-invoice-retail-form .retail-si-panel__title {
+	font-size: var(--text-sm, 13px);
+	font-weight: 600;
+	color: var(--text-color);
+	padding-bottom: var(--padding-md);
+	margin-bottom: var(--padding-md);
+	border-bottom: 1px solid var(--border-color);
+}
+
+.sales-invoice-retail-form .retail-si-summary-col [data-fieldname="retail_summary_section"],
+.sales-invoice-retail-form .retail-si-einvoice-col [data-fieldname="retail_einvoice_section"] {
+	display: none !important;
+}
+
+.sales-invoice-retail-form .retail-si-summary-col [data-fieldname="retail_financial_summary"],
+.sales-invoice-retail-form .retail-si-einvoice-col [data-fieldname="retail_einvoice_badge"] {
+	display: none !important;
+}
+
+/* ── Customer address alert (ZATCA) ── */
+.sales-invoice-retail-form .retail-address-alert {
+	grid-column: 1 / -1;
+	padding: var(--padding-md);
+	margin-bottom: var(--margin-sm);
+	background: var(--alert-bg-danger);
+	border: 1px solid var(--red-200);
+	border-radius: var(--border-radius-sm, 6px);
+	color: var(--alert-text-danger);
+	font-size: var(--text-sm, 13px);
+}
+
+.sales-invoice-retail-form .retail-address-alert__title {
+	font-weight: 600;
+	margin-bottom: 6px;
+}
+
+.sales-invoice-retail-form .retail-address-alert__body {
+	line-height: 1.5;
+	margin-bottom: 8px;
+}
+
+.sales-invoice-retail-form .retail-address-alert__edit {
+	margin-top: 4px;
+}
+
+/* ── Financial summary ── */
+.sales-invoice-retail-form .retail-financial-summary {
+	padding: 0;
+}
+
+.sales-invoice-retail-form .retail-summary-table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.sales-invoice-retail-form .retail-summary-table tr td {
+	padding: var(--padding-sm) 0;
+	font-size: var(--text-sm, 13px);
+	border-bottom: 1px solid var(--table-border-color);
+}
+
+.sales-invoice-retail-form .retail-summary-table tr:last-child td {
+	border-bottom: none;
+}
+
+.sales-invoice-retail-form .retail-summary-table tr td:first-child {
+	color: var(--text-muted);
+}
+
+.sales-invoice-retail-form .retail-summary-table tr td:last-child {
+	text-align: end;
+	font-weight: 500;
+	color: var(--text-color);
+	font-variant-numeric: tabular-nums;
+	direction: ltr;
+}
+
+.sales-invoice-retail-form .retail-summary-table tr.retail-summary-discount td:last-child {
+	color: var(--alert-text-danger);
+	font-weight: 600;
+}
+
+.sales-invoice-retail-form .retail-summary-table tr.retail-summary-grand td {
+	border-bottom: none;
+	padding-top: var(--padding-md);
+}
+
+.sales-invoice-retail-form .retail-summary-grand-box {
+	background: var(--alert-bg-info);
+	border: 1px solid var(--blue-200);
+	border-radius: var(--border-radius-md, 8px);
+	padding: var(--padding-md) var(--padding-lg);
+	margin: var(--padding-sm) 0;
+}
+
+.sales-invoice-retail-form .retail-summary-grand-box .retail-summary-grand-label {
+	font-size: var(--text-xs, 11px);
+	font-weight: 600;
+	color: var(--text-on-blue);
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	margin-bottom: 4px;
+}
+
+.sales-invoice-retail-form .retail-summary-grand-box .retail-summary-grand-value {
+	font-size: 22px;
+	font-weight: 700;
+	color: var(--text-on-blue);
+	font-variant-numeric: tabular-nums;
+	direction: ltr;
+	text-align: start;
+	line-height: 1.2;
+}
+
+.sales-invoice-retail-form .retail-summary-table tr.retail-summary-outstanding td:last-child {
+	color: var(--alert-text-success);
+	font-weight: 700;
+	font-size: var(--text-md, 15px);
+}
+
+/* Hide duplicate total fields when summary panel is shown */
+.sales-invoice-retail-form.retail-summary-active [data-fieldname="totals_section"],
+.sales-invoice-retail-form.retail-summary-active [data-fieldname="base_totals_section"],
+.sales-invoice-retail-form.retail-summary-active [data-fieldname="section_break_pxwz"],
+.sales-invoice-retail-form.retail-summary-active [data-fieldname="retail_financial_summary"] .like-disabled-input,
+.sales-invoice-retail-form.retail-summary-active [data-fieldname="grand_total"],
+.sales-invoice-retail-form.retail-summary-active [data-fieldname="outstanding_amount"],
+.sales-invoice-retail-form.retail-summary-active [data-fieldname="paid_amount"],
+.sales-invoice-retail-form.retail-summary-active [data-fieldname="net_total"],
+.sales-invoice-retail-form.retail-summary-active [data-fieldname="total_taxes_and_charges"],
+.sales-invoice-retail-form.retail-summary-active [data-fieldname="discount_amount"],
+.sales-invoice-retail-form.retail-summary-active [data-fieldname="total"],
+.sales-invoice-retail-form.retail-summary-active [data-fieldname="base_total_taxes_and_charges"],
+.sales-invoice-retail-form.retail-summary-active [data-fieldname="column_break_47"],
+.sales-invoice-retail-form.retail-summary-active [data-fieldname="column_break5"],
+.sales-invoice-retail-form.retail-summary-active [data-fieldname="in_words"],
+.sales-invoice-retail-form.retail-summary-active [data-fieldname="base_grand_total"] {
+	display: none !important;
+}
+
+/* ── E-invoicing section ── */
+.sales-invoice-retail-form [data-fieldname="retail_einvoice_section"] {
+	border-inline-start: none;
+}
+
+.sales-invoice-retail-form .retail-einvoice-panel {
+	display: flex;
+	flex-direction: column;
+	gap: var(--margin-md);
+	padding: var(--padding-sm) 0;
+}
+
+.sales-invoice-retail-form .retail-einvoice-panel__header {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--margin-sm) var(--margin-md);
+}
+
+.sales-invoice-retail-form .retail-einvoice-panel__title {
+	display: flex;
+	align-items: center;
+	gap: var(--padding-sm);
+	font-size: var(--text-sm, 13px);
+	font-weight: 600;
+	color: var(--text-color);
+}
+
+.sales-invoice-retail-form .retail-einvoice-panel__title .icon {
+	width: 16px;
+	height: 16px;
+	color: var(--blue-600);
+}
+
+.sales-invoice-retail-form .retail-einvoice-type-badge {
+	display: inline-flex;
+	align-items: center;
+	padding: 3px 12px;
+	border-radius: var(--border-radius-full, 20px);
+	font-size: var(--text-xs, 12px);
+	font-weight: 600;
+	letter-spacing: 0.02em;
+}
+
+.sales-invoice-retail-form .retail-einvoice-type-badge.badge-b2b {
+	background: var(--blue-600);
+	color: var(--neutral-white);
+}
+
+.sales-invoice-retail-form .retail-einvoice-type-badge.badge-b2c {
+	background: var(--green-600);
+	color: var(--neutral-white);
+}
+
+.sales-invoice-retail-form .retail-einvoice-status-row {
+	display: flex;
+	align-items: center;
+	gap: var(--padding-sm);
+	flex-wrap: wrap;
+}
+
+.sales-invoice-retail-form .retail-einvoice-status-label {
+	font-size: var(--text-sm, 13px);
+	color: var(--text-muted);
+}
+
+.sales-invoice-retail-form .retail-einvoice-note {
+	font-size: var(--text-xs, 12px);
+	color: var(--text-muted);
+	padding: var(--padding-sm) var(--padding-md);
+	background: var(--subtle-fg);
+	border-radius: var(--border-radius-sm, 6px);
+	border: 1px solid var(--border-color);
+	line-height: 1.5;
+}
+
+.sales-invoice-retail-form .retail-einvoice-type-label {
+	font-size: var(--text-sm, 13px);
+}
+
+.sales-invoice-retail-form .retail-einvoice-meta {
+	display: flex;
+	flex-direction: column;
+	gap: var(--padding-sm);
+	padding: var(--padding-sm) var(--padding-md);
+	background: var(--subtle-accent);
+	border: 1px solid var(--border-color);
+	border-radius: var(--border-radius-sm, 6px);
+}
+
+.sales-invoice-retail-form .retail-einvoice-meta__row {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: var(--margin-md);
+	font-size: var(--text-sm, 13px);
+}
+
+.sales-invoice-retail-form .retail-einvoice-meta__label {
+	color: var(--text-muted);
+	flex-shrink: 0;
+}
+
+.sales-invoice-retail-form .retail-einvoice-meta__value {
+	font-weight: 500;
+	color: var(--text-color);
+	text-align: end;
+	word-break: break-all;
+}
+
+/* Hide raw e-invoice fields; panel HTML hosts the visible UI */
+.sales-invoice-retail-form [data-fieldname="is_e_invoice"],
+.sales-invoice-retail-form [data-fieldname="e_invoice_type"],
+.sales-invoice-retail-form [data-fieldname="pi_number"],
+.sales-invoice-retail-form [data-fieldname="zatca_reference"],
+.sales-invoice-retail-form [data-fieldname="zatca_sync_status"],
+.sales-invoice-retail-form [data-fieldname="retail_delivery_section"],
+.sales-invoice-retail-form [data-fieldname="shipping_cost"],
+.sales-invoice-retail-form [data-fieldname="delivery_date"],
+.sales-invoice-retail-form [data-fieldname="driver"],
+.sales-invoice-retail-form [data-fieldname="delivery_status"] {
+	display: none !important;
+}
+
+.sales-invoice-retail-form [data-fieldname="retail_einvoice_badge"] .control-label,
+.sales-invoice-retail-form [data-fieldname="retail_financial_summary"] .control-label,
+.sales-invoice-retail-form [data-fieldname="zatca_status"] .control-label {
+	display: none;
+}
+
+.sales-invoice-retail-form [data-fieldname="retail_einvoice_badge"],
+.sales-invoice-retail-form [data-fieldname="retail_financial_summary"] {
+	margin-bottom: 0;
+}
+
+.sales-invoice-retail-form [data-fieldname="zatca_status"] {
+	display: none !important;
+}
+
+/* ── Footer ── */
+.sales-invoice-retail-form .retail-si-footer {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: var(--margin-md);
+	background: var(--card-bg);
+	border: 1px solid var(--border-color);
+	border-radius: var(--border-radius-md, 8px);
+	padding: var(--padding-md);
+	margin-top: var(--margin-md);
+	box-shadow: var(--card-shadow);
+}
+
+.sales-invoice-retail-form .retail-si-footer .form-section {
+	border: none;
+	padding: 0;
+	margin: 0;
+	box-shadow: none;
+	background: transparent;
+}
+
+.sales-invoice-retail-form .retail-si-attachments-head {
+	display: flex;
+	align-items: center;
+	gap: var(--padding-sm);
+	font-size: var(--text-sm, 13px);
+	font-weight: 600;
+	margin-bottom: var(--padding-sm);
+	color: var(--text-color);
+}
+
+.sales-invoice-retail-form .retail-si-footer .form-attachments {
+	border: 2px dashed var(--border-color);
+	border-radius: var(--border-radius-md, 8px);
+	padding: var(--padding-md);
+	min-height: 100px;
+	background: var(--subtle-accent);
+	transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.sales-invoice-retail-form .retail-si-footer .form-attachments:hover {
+	border-color: var(--gray-400);
+	background: var(--subtle-fg);
+}
+
+.sales-invoice-retail-form .retail-si-footer-notes .section-head {
+	font-size: var(--text-sm, 13px);
+	font-weight: 600;
+	margin-bottom: var(--padding-md);
+	color: var(--text-color);
+}
+
+/* ── Hide clutter on desk form ── */
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="company_tax_id"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="posting_time"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="set_posting_time"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="conversion_rate"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="selling_price_list"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="price_list_currency"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="plc_conversion_rate"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="ignore_pricing_rule"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="scan_barcode"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="last_scanned_warehouse"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="set_target_warehouse"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="column_break_39"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="section_break_qllv"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="title"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="accounting_dimensions_section"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="dimension_col_break"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="project"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="column_break2"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="total_qty"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="total_net_weight"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="column_break_32"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="base_total"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="base_net_total"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="column_break_52"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="tax_category"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="incoterm"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="named_place"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="column_break_55"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="column_break_38"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="sec_tax_breakup"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="other_charges_calculation"],
+.sales-invoice-retail-form.retail-desk-mode [data-fieldname="item_wise_tax_details"] {
+	display: none !important;
+}
+
+/* ── Responsive ── */
+@media (max-width: 992px) {
+	.sales-invoice-retail-form .retail-si-header-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.sales-invoice-retail-form .retail-si-bottom-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.sales-invoice-retail-form .retail-si-summary-col {
+		position: static;
+	}
+
+	.sales-invoice-retail-form .retail-si-footer {
+		grid-template-columns: 1fr;
+	}
+
+	.sales-invoice-retail-form .retail-si-card__body {
+		grid-template-columns: 1fr;
+	}
+
+	.sales-invoice-retail-form .retail-si-quick-bar__item {
+		flex: 1 1 50%;
+		border-bottom: 1px solid var(--border-color);
+	}
+
+	.sales-invoice-retail-form .retail-si-quick-bar__item:nth-child(2n) {
+		border-inline-end: none;
+	}
+}
+
+@media (max-width: 576px) {
+	.sales-invoice-retail-form .retail-si-quick-bar__item {
+		flex: 1 1 100%;
+		border-inline-end: none;
+	}
+}
+
+/* ── RTL ── */
+[dir="rtl"] .sales-invoice-retail-form .form-tabs-list .nav-link {
+	text-align: right;
+}
+
+[dir="rtl"] .sales-invoice-retail-form .retail-summary-table tr td:last-child {
+	text-align: left;
+}
+
+[dir="rtl"] .sales-invoice-retail-form .retail-summary-grand-box .retail-summary-grand-value {
+	text-align: right;
+}
