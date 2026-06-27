@@ -47,7 +47,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Entity",
-   "options": "Item\nPrice\nCustomer\nTax\nWarehouse\nStock\nPromotion\nAll",
+   "options": "Item\nPrice\nCustomer\nTax\nWarehouse\nStock\nPromotion\nDiscount\nCashier Movement\nAll",
    "reqd": 1
   },
   {
