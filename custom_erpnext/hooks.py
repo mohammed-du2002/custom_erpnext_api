@@ -25,7 +25,7 @@ app_license = "mit"
 # ------------------
 
 # include js, css files in header of desk.html
-# app_include_css = "/assets/custom_erpnext/css/custom_erpnext.css"
+app_include_css = "/assets/custom_erpnext/css/sales_invoice.css"
 # app_include_js = "/assets/custom_erpnext/js/custom_erpnext.js"
 
 # include js, css files in header of web template
@@ -45,12 +45,15 @@ app_license = "mit"
 # include js in doctype views
 doctype_js = {
 	"Sales Invoice": "public/js/sales_invoice.js",
+	"Customer": "public/js/customer.js",
 	"Item": "public/js/item.js",
 	"POS Profile": "public/js/pos_profile.js",
 	"Purchase Invoice": "public/js/purchase_invoice.js",
 	"Stock Entry": "public/js/stock_entry.js",
 }
-# doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
+doctype_list_js = {
+	"Sales Invoice": "public/js/sales_invoice_list.js",
+}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
@@ -97,6 +100,11 @@ after_migrate = [
 	"custom_erpnext.setup.workflows.setup_workflows",
 	"custom_erpnext.setup.user_permissions.sync_all_user_branch_permissions",
 	"custom_erpnext.setup.naming_series.sync_all_branch_naming_series",
+	"custom_erpnext.setup.sales_invoice_setup.cleanup_removed_sales_invoice_fields",
+	"custom_erpnext.setup.stock_settings.enable_negative_stock_for_retail",
+	"custom_erpnext.integrations.zatca.hooks.check_ksa_compliance_dependency",
+	"custom_erpnext.integrations.zatca.hooks.setup_zatca_integration",
+	"custom_erpnext.setup.build_ar_translations.build_ar_translations",
 ]
 
 # Uninstallation
@@ -166,11 +174,23 @@ has_permission = {
 
 doc_events = {
 	"Item": {
-		"validate": "custom_erpnext.services.item_service.validate_selling_prices",
+		"validate": [
+			"custom_erpnext.services.item_service.validate_selling_prices",
+			"custom_erpnext.services.item_service.validate_composite_item",
+		],
 		"on_update": "custom_erpnext.services.sync_service.trigger_urgent_sync_for_item",
 	},
 	"Item Price": {
 		"on_update": "custom_erpnext.services.sync_service.trigger_urgent_sync_for_item_price",
+	},
+	"Promotion Rule": {
+		"on_update": "custom_erpnext.services.sync_service.trigger_urgent_sync_for_promotion",
+	},
+	"User Discount Profile": {
+		"on_update": [
+			"custom_erpnext.services.branch_permission_service.sync_profile_branch_permissions",
+			"custom_erpnext.services.sync_service.trigger_urgent_sync_for_discount",
+		],
 	},
 	"Material Request": {
 		"validate": _branch_validate_handlers("Material Request"),
@@ -180,14 +200,16 @@ doc_events = {
 		"validate": _branch_validate_handlers("Stock Transfer Request"),
 		"on_update": "custom_erpnext.setup.workflows.on_stock_transfer_update",
 	},
-	"User Discount Profile": {
-		"on_update": "custom_erpnext.services.branch_permission_service.sync_profile_branch_permissions",
-	},
 	"User": {
+		"validate": "custom_erpnext.services.foundation_service.validate_user_retail_fields",
 		"on_update": "custom_erpnext.services.branch_permission_service.sync_user_default_branch",
 	},
 	"Sales Invoice": {
-		"validate": _branch_validate_handlers("Sales Invoice"),
+		# validate: prepare customer VAT + ERPNext Branch before ksa_compliance hooks run on submit.
+		"validate": _branch_validate_handlers("Sales Invoice")
+		+ ["custom_erpnext.services.sales_invoice_service.validate_sales_invoice"],
+		# on_submit: retail tracking fields only; ksa_compliance owns XML/sign/clearance.
+		"on_submit": "custom_erpnext.integrations.zatca.sales_invoice.submit_zatca",
 	},
 	"Purchase Order": {
 		"validate": _branch_validate_handlers("Purchase Order"),
@@ -205,16 +227,37 @@ doc_events = {
 		"validate": "custom_erpnext.services.branch_permission_service.validate_document_branch",
 	},
 	"Warehouse": {
-		"validate": "custom_erpnext.services.branch_permission_service.validate_document_branch",
+		"validate": [
+			"custom_erpnext.services.branch_permission_service.validate_document_branch",
+			"custom_erpnext.services.foundation_service.validate_warehouse_branch",
+		],
+	},
+	"Company": {
+		"validate": "custom_erpnext.services.foundation_service.validate_company_retail_fields",
 	},
 	"Customer": {
-		"validate": "custom_erpnext.services.branch_permission_service.validate_document_branch",
+		"validate": [
+			"custom_erpnext.services.branch_permission_service.validate_document_branch",
+			"custom_erpnext.services.sales_invoice_service.validate_customer_tax_id",
+		],
+		"on_update": "custom_erpnext.services.sync_service.trigger_urgent_sync_for_customer",
+	},
+	"Sales Invoice Additional Fields": {
+		# Mirror ksa_compliance async status updates back to retail Sales Invoice fields.
+		"on_update": "custom_erpnext.integrations.zatca.sales_invoice.mirror_siaf_to_sales_invoice",
+		"on_submit": "custom_erpnext.integrations.zatca.sales_invoice.mirror_siaf_to_sales_invoice",
 	},
 	"Supplier": {
 		"validate": "custom_erpnext.services.branch_permission_service.validate_document_branch",
 	},
 	"Daily Sales Summary": {
 		"validate": _branch_validate_handlers("Daily Sales Summary"),
+	},
+	"POS Cashier Shift": {
+		"validate": _branch_validate_handlers("POS Cashier Shift"),
+	},
+	"Cashier Movement": {
+		"validate": _branch_validate_handlers("Cashier Movement"),
 	},
 	"POS Device": {
 		"validate": "custom_erpnext.services.branch_permission_service.validate_document_branch",
