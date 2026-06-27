@@ -44,6 +44,18 @@
    "read_only": 1
   },
   {
+   "fieldname": "auto_suggested_supplier",
+   "fieldtype": "Link",
+   "depends_on": "eval:doc.auto_created_via_reorder",
+   "insert_after": "source_item",
+   "label": "Suggested Supplier (Reorder)",
+   "module": "Custom Erpnext",
+   "name": "Material Request-auto_suggested_supplier",
+   "dt": "Material Request",
+   "options": "Supplier",
+   "read_only": 1
+  },
+  {
    "fieldname": "retail_approval_column",
    "fieldtype": "Column Break",
    "insert_after": "source_item",

@@ -19,6 +19,7 @@
   "status",
   "column_break_2",
   "allocated_to_invoice",
+  "allocated_amount",
   "remaining_amount",
   "notes"
  ],
@@ -91,7 +92,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Status",
-   "options": "Draft\nPaid\nAllocated\nRefunded"
+   "options": "Draft\nPaid\nPartially Allocated\nAllocated\nRefunded"
   },
   {
    "fieldname": "column_break_2",
@@ -102,6 +103,11 @@
    "fieldtype": "Link",
    "label": "Allocated to Invoice",
    "options": "Purchase Invoice"
+  },
+  {
+   "fieldname": "allocated_amount",
+   "fieldtype": "Currency",
+   "label": "Allocated Amount"
   },
   {
    "fieldname": "remaining_amount",

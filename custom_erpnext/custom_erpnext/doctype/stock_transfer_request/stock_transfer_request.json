@@ -21,6 +21,13 @@
   "column_break_2",
   "transfer_cost",
   "notes",
+  "section_pricing",
+  "pricing_method",
+  "margin_percent",
+  "additional_expenses",
+  "column_break_pricing",
+  "charge_to_company",
+  "total_transfer_value",
   "section_items",
   "items"
  ],
@@ -117,6 +124,44 @@
    "fieldname": "notes",
    "fieldtype": "Text",
    "label": "Notes"
+  },
+  {
+   "fieldname": "section_pricing",
+   "fieldtype": "Section Break",
+   "label": "Transfer Pricing"
+  },
+  {
+   "default": "Cost",
+   "fieldname": "pricing_method",
+   "fieldtype": "Select",
+   "label": "Pricing Method",
+   "options": "Cost\nSelling\nSpecial"
+  },
+  {
+   "fieldname": "margin_percent",
+   "fieldtype": "Percent",
+   "label": "Profit Margin %"
+  },
+  {
+   "fieldname": "additional_expenses",
+   "fieldtype": "Currency",
+   "label": "Additional Expenses"
+  },
+  {
+   "fieldname": "column_break_pricing",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "charge_to_company",
+   "fieldtype": "Link",
+   "label": "Charge To Company",
+   "options": "Company"
+  },
+  {
+   "fieldname": "total_transfer_value",
+   "fieldtype": "Currency",
+   "label": "Total Transfer Value",
+   "read_only": 1
   },
   {
    "fieldname": "section_items",

@@ -8,6 +8,10 @@
   "item_code",
   "qty",
   "uom",
+  "special_rate",
+  "rate",
+  "amount",
+  "landed_rate",
   "from_location_code",
   "to_location_code",
   "actual_qty",
@@ -28,6 +32,29 @@
    "in_list_view": 1,
    "label": "Qty",
    "reqd": 1
+  },
+  {
+   "fieldname": "special_rate",
+   "fieldtype": "Currency",
+   "label": "Special Transfer Rate"
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "label": "Transfer Rate",
+   "read_only": 1
+  },
+  {
+   "fieldname": "amount",
+   "fieldtype": "Currency",
+   "label": "Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "landed_rate",
+   "fieldtype": "Currency",
+   "label": "Landed Rate (incl. expenses)",
+   "read_only": 1
   },
   {
    "fieldname": "uom",
