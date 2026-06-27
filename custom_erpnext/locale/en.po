@@ -1,0 +1,207 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: custom_erpnext\n"
+"Report-Msgid-Bugs-To: tsc4it@gmail.com\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Invoice Data"
+msgstr "Invoice Data"
+
+msgid "Products"
+msgstr "Products"
+
+msgid "Taxes and Charges"
+msgstr "Taxes and Charges"
+
+msgid "Additional Info"
+msgstr "Additional Info"
+
+msgid "Branch"
+msgstr "Branch"
+
+msgid "Retail POS"
+msgstr "Retail POS"
+
+msgid "POS Device"
+msgstr "POS Device"
+
+msgid "Cashier"
+msgstr "Cashier"
+
+msgid "Shift ID"
+msgstr "Shift ID"
+
+msgid "Offline Invoice ID"
+msgstr "Offline Invoice ID"
+
+msgid "Sync Status"
+msgstr "Sync Status"
+
+msgid "Sync Log"
+msgstr "Sync Log"
+
+msgid "Return Details"
+msgstr "Return Details"
+
+msgid "Return Reason"
+msgstr "Return Reason"
+
+msgid "Promotion"
+msgstr "Promotion"
+
+msgid "Promotion Applied"
+msgstr "Promotion Applied"
+
+msgid "E-Invoicing"
+msgstr "E-Invoicing"
+
+msgid "Is E-Invoice"
+msgstr "Is E-Invoice"
+
+msgid "E-Invoice Type"
+msgstr "E-Invoice Type"
+
+msgid "E-Invoice Badge"
+msgstr "E-Invoice Badge"
+
+msgid "Tax Invoice Number"
+msgstr "Tax Invoice Number"
+
+msgid "ZATCA Status"
+msgstr "ZATCA Status"
+
+msgid "ZATCA UUID"
+msgstr "ZATCA UUID"
+
+msgid "Extended Payments"
+msgstr "Extended Payments"
+
+msgid "Tabby Reference"
+msgstr "Tabby Reference"
+
+msgid "Tamara Reference"
+msgstr "Tamara Reference"
+
+msgid "Wallet Amount"
+msgstr "Wallet Amount"
+
+msgid "Delivery"
+msgstr "Delivery"
+
+msgid "Shipping Cost"
+msgstr "Shipping Cost"
+
+msgid "Delivery Date"
+msgstr "Delivery Date"
+
+msgid "Driver"
+msgstr "Driver"
+
+msgid "Delivery Status"
+msgstr "Delivery Status"
+
+msgid "Retail Settings"
+msgstr "Retail Settings"
+
+msgid "Customer Code"
+msgstr "Customer Code"
+
+msgid "Default Branch"
+msgstr "Default Branch"
+
+msgid "Party Account"
+msgstr "Party Account"
+
+msgid "Max Discount %"
+msgstr "Max Discount %"
+
+msgid "Credit Days"
+msgstr "Credit Days"
+
+msgid "Alert on Overdue"
+msgstr "Alert on Overdue"
+
+msgid "Identity"
+msgstr "Identity"
+
+msgid "ID / CR Number"
+msgstr "ID / CR Number"
+
+msgid "Tax Number"
+msgstr "Tax Number"
+
+msgid "Saudi VAT number — exactly 15 digits"
+msgstr "Saudi VAT number — exactly 15 digits"
+
+msgid "Return Type"
+msgstr "Return Type"
+
+msgid "Item Code"
+msgstr "Item Code"
+
+msgid "Return Condition"
+msgstr "Return Condition"
+
+msgid "Original Qty"
+msgstr "Original Qty"
+
+msgid "Returned Qty"
+msgstr "Returned Qty"
+
+msgid "Return Rate"
+msgstr "Return Rate"
+
+msgid "Return Amount"
+msgstr "Return Amount"
+
+msgid "Restocking Fee"
+msgstr "Restocking Fee"
+
+msgid "Refund Method"
+msgstr "Refund Method"
+
+msgid "Credit Note Reference"
+msgstr "Credit Note Reference"
+
+msgid "Customer Address is mandatory for B2B customers with Tax Number"
+msgstr "Customer Address is mandatory for B2B customers with Tax Number"
+
+msgid "Tax Number must be exactly 15 digits"
+msgstr "Tax Number must be exactly 15 digits"
+
+msgid "Naming Series must match branch configuration: {0}"
+msgstr "Naming Series must match branch configuration: {0}"
+
+msgid "Warehouse {0} does not belong to branch {1}"
+msgstr "Warehouse {0} does not belong to branch {1}"
+
+msgid "Discount {0}% exceeds allowed limit {1}% for user {2}."
+msgstr "Discount {0}% exceeds allowed limit {1}% for user {2}."
+
+msgid "Item {0}: discount {1}% exceeds limit {2}%"
+msgstr "Item {0}: discount {1}% exceeds limit {2}%"
+
+msgid "POS Invoices"
+msgstr "POS Invoices"
+
+msgid "Sales Invoices"
+msgstr "Sales Invoices"
+
+msgid "Draft"
+msgstr "Draft"
+
+msgid "Submitted"
+msgstr "Submitted"
+
+msgid "Cancelled"
+msgstr "Cancelled"
+
+msgid "B2B"
+msgstr "B2B"
+
+msgid "B2C"
+msgstr "B2C"
