@@ -49,6 +49,56 @@
    "name": "Company-party_account_model",
    "dt": "Company",
    "options": "Centralized\nPer-Branch"
+  },
+  {
+   "fieldname": "post_cashier_movement_gl",
+   "fieldtype": "Check",
+   "insert_after": "party_account_model",
+   "label": "Post Cashier Movement GL Entries",
+   "default": "0",
+   "module": "Custom Erpnext",
+   "name": "Company-post_cashier_movement_gl",
+   "dt": "Company"
+  },
+  {
+   "fieldname": "pos_cash_account",
+   "fieldtype": "Link",
+   "insert_after": "post_cashier_movement_gl",
+   "label": "POS Cash Account",
+   "module": "Custom Erpnext",
+   "name": "Company-pos_cash_account",
+   "dt": "Company",
+   "options": "Account"
+  },
+  {
+   "fieldname": "cash_short_account",
+   "fieldtype": "Link",
+   "insert_after": "pos_cash_account",
+   "label": "Cash Short Account",
+   "module": "Custom Erpnext",
+   "name": "Company-cash_short_account",
+   "dt": "Company",
+   "options": "Account"
+  },
+  {
+   "fieldname": "cash_over_account",
+   "fieldtype": "Link",
+   "insert_after": "cash_short_account",
+   "label": "Cash Over Account",
+   "module": "Custom Erpnext",
+   "name": "Company-cash_over_account",
+   "dt": "Company",
+   "options": "Account"
+  },
+  {
+   "fieldname": "petty_cash_expense_account",
+   "fieldtype": "Link",
+   "insert_after": "cash_over_account",
+   "label": "Petty Cash Expense Account",
+   "module": "Custom Erpnext",
+   "name": "Company-petty_cash_expense_account",
+   "dt": "Company",
+   "options": "Account"
   }
  ],
  "custom_perms": [],

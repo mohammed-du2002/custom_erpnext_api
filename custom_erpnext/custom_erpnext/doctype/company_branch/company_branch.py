@@ -12,9 +12,17 @@ class CompanyBranch(Document):
 		self.validate_company_links()
 
 	def on_update(self):
+		from custom_erpnext.integrations.zatca.utils import (
+			ensure_erpnext_branch_for_company_branch,
+			is_ksa_compliance_installed,
+		)
+
 		from custom_erpnext.services.naming_series_service import register_branch_naming_series
 
 		register_branch_naming_series(self)
+
+		if is_ksa_compliance_installed():
+			ensure_erpnext_branch_for_company_branch(self.name)
 
 	def validate_branch_code(self):
 		self.branch_code = (self.branch_code or "").strip().upper()

@@ -19,6 +19,8 @@ BRANCH_ISOLATED_DOCTYPES = [
 	"Customer",
 	"Supplier",
 	"Daily Sales Summary",
+	"POS Cashier Shift",
+	"Cashier Movement",
 	"POS Device",
 	"Payment Method Config",
 	"Party Account Mapping",
@@ -38,6 +40,8 @@ BRANCH_VALIDATE_DOCTYPES = [
 	"Customer",
 	"Supplier",
 	"Daily Sales Summary",
+	"POS Cashier Shift",
+	"Cashier Movement",
 	"POS Device",
 	"Payment Method Config",
 	"Party Account Mapping",
@@ -145,7 +149,13 @@ def get_permission_query_conditions(user, doctype=None):
 
 	meta = frappe.get_meta(doctype)
 	if meta.has_field("branch"):
-		return f"`tab{doctype}`.branch in {_sql_in(branches)}"
+		branch_list = _sql_in(branches)
+		if doctype in ("Customer", "Supplier"):
+			return (
+				f"(`tab{doctype}`.branch in {branch_list} "
+				f"OR IFNULL(`tab{doctype}`.branch, '') = '')"
+			)
+		return f"`tab{doctype}`.branch in {branch_list}"
 
 	return ""
 
@@ -153,6 +163,9 @@ def get_permission_query_conditions(user, doctype=None):
 def has_branch_permission(doc, ptype=None, user=None, debug=False):
 	user = user or frappe.session.user
 	if bypass_branch_restrictions(user):
+		return True
+
+	if getattr(frappe.local, "middleware_sync", False):
 		return True
 
 	if doc.doctype == "Company Branch":
@@ -167,6 +180,9 @@ def has_branch_permission(doc, ptype=None, user=None, debug=False):
 
 	branch = doc.get("branch")
 	if not branch:
+		# Shared walk-in parties without branch must remain readable for POS/API flows.
+		if doc.doctype in ("Customer", "Supplier") and ptype in ("read", "select"):
+			return bool(get_user_branches(user))
 		return ptype in ("create", "write")
 
 	return user_has_branch_access(user, branch)

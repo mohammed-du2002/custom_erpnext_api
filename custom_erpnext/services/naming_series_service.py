@@ -18,6 +18,8 @@ BRANCH_NAMING_TEMPLATES = {
 	"Purchase Receipt": "PR-{branch}-.",
 	"Daily Sales Summary": "DSS-{branch}-.",
 	"Stock Transfer Request": "STR-{branch}-.",
+	"POS Cashier Shift": "PCS-{branch}-.",
+	"Cashier Movement": "CMV-{branch}-.",
 }
 
 BRANCH_NAMING_DOCTYPES = list(BRANCH_NAMING_TEMPLATES.keys())

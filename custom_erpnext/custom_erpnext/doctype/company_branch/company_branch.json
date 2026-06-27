@@ -11,6 +11,7 @@
   "branch_name",
   "branch_code",
   "company",
+  "commercial_registration_number",
   "column_break_1",
   "cost_center",
   "warehouse",
@@ -48,6 +49,12 @@
    "options": "Company",
    "reqd": 1,
    "search_index": 1
+  },
+  {
+   "description": "Commercial Registration Number (CRN). Used for ZATCA branch configuration when enabled.",
+   "fieldname": "commercial_registration_number",
+   "fieldtype": "Data",
+   "label": "Commercial Registration Number"
   },
   {
    "fieldname": "column_break_1",
