@@ -70,18 +70,9 @@
    "dt": "Item"
   },
   {
-   "fieldname": "max_discount",
-   "fieldtype": "Percent",
-   "insert_after": "retail_pricing_column",
-   "label": "Max Discount %",
-   "module": "Custom Erpnext",
-   "name": "Item-max_discount",
-   "dt": "Item"
-  },
-  {
    "fieldname": "profit_margin",
    "fieldtype": "Percent",
-   "insert_after": "max_discount",
+   "insert_after": "retail_pricing_column",
    "label": "Profit Margin %",
    "module": "Custom Erpnext",
    "name": "Item-profit_margin",
