@@ -11,3 +11,5 @@ custom_erpnext.patches.v1_0.backfill_is_pos_transaction
 custom_erpnext.patches.v1_0.add_cashier_movement_sync_config
 custom_erpnext.patches.v1_0.align_srs_sync_configurations
 custom_erpnext.patches.v1_0.grant_middleware_stock_manager
+custom_erpnext.patches.v1_0.sync_middleware_api_credentials
+custom_erpnext.patches.v1_0.add_webhook_credentials_fields

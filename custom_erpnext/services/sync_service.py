@@ -4,57 +4,108 @@
 import hashlib
 import hmac
 import json
-import time
 import uuid
 
 import frappe
-from frappe.integrations.utils import make_post_request
-from frappe.utils import now_datetime
+from frappe.utils import get_request_session, now_datetime
 
 INTEGRATION_SYSTEM = "Laravel Middleware"
 WEBHOOK_MAX_ATTEMPTS = 3
 WEBHOOK_RETRY_DELAY_SECONDS = 30
 
+# Map Frappe DocType -> Laravel middleware webhook entity + urgent Sync Configuration.
+# The `entity` value MUST match Laravel's PullSyncEntityEnum (lowercase, plural).
+ENTITY_CONFIG = {
+	"Item": {"entity": "items", "config_name": "Urgent Item Changes"},
+	"Item Price": {"entity": "item_prices", "config_name": "Urgent Price Changes"},
+	"Customer": {"entity": "customers", "config_name": "Urgent Customer Changes"},
+	"Promotion Rule": {"entity": "promotions", "config_name": "Urgent Promotion Changes"},
+	"User Discount Profile": {"entity": "discounts", "config_name": "Urgent Discount Changes"},
+}
 
-def trigger_urgent_sync(entity, reference_name, config_name=None):
-	"""Queue urgent sync notification for Laravel middleware."""
-	if frappe.flags.in_import or frappe.flags.in_patch:
+# Map the Frappe doc event to the Laravel webhook operation.
+OPERATION_BY_METHOD = {
+	"after_insert": "create",
+	"on_update": "update",
+	"on_trash": "delete",
+}
+
+
+def trigger_urgent_sync_doc_event(doc, method=None):
+	"""Generic doc-event handler wired to after_insert / on_update / on_trash.
+
+	Resolves the Laravel entity + operation from the DocType and event, then
+	queues a targeted webhook. Skips the redundant ``on_update`` that Frappe
+	fires during ``insert`` so a new record emits a single ``create`` event.
+	"""
+	mapping = ENTITY_CONFIG.get(doc.doctype)
+	if not mapping:
+		return
+
+	operation = OPERATION_BY_METHOD.get(method)
+	if not operation:
+		return
+
+	if operation == "update" and getattr(doc.flags, "in_insert", False):
+		return
+
+	branch_id, company_id = _extract_scope(doc)
+	trigger_urgent_sync(
+		entity=mapping["entity"],
+		erp_id=doc.name,
+		operation=operation,
+		config_name=mapping["config_name"],
+		branch_id=branch_id,
+		company_id=company_id,
+	)
+
+
+def trigger_urgent_sync(
+	entity, erp_id, operation="update", config_name=None, branch_id=None, company_id=None
+):
+	"""Queue an urgent sync notification for the Laravel middleware."""
+	if frappe.flags.in_import or frappe.flags.in_patch or frappe.flags.in_install:
 		return
 
 	frappe.enqueue(
 		"custom_erpnext.services.sync_service.notify_middleware",
 		queue="short",
 		entity=entity,
-		reference_name=reference_name,
+		erp_id=erp_id,
+		operation=operation,
 		config_name=config_name,
+		branch_id=branch_id,
+		company_id=company_id,
 		attempt=1,
-		job_id=f"urgent-sync-{entity}-{reference_name}",
+		job_id=f"urgent-sync-{entity}-{erp_id}-{operation}",
 		deduplicate=True,
 	)
 
 
-def trigger_urgent_sync_for_item(doc, method=None):
-	trigger_urgent_sync("Item", doc.name, config_name="Urgent Item Changes")
+def _extract_scope(doc):
+	"""Best-effort extraction of branch/company scope for the webhook payload."""
+	company_id = doc.get("company") if hasattr(doc, "get") else None
+
+	branch_id = None
+	for fieldname in ("branch", "company_branch", "custom_branch", "erpnext_branch"):
+		value = doc.get(fieldname) if hasattr(doc, "get") else None
+		if value:
+			branch_id = value
+			break
+
+	return branch_id, company_id
 
 
-def trigger_urgent_sync_for_item_price(doc, method=None):
-	trigger_urgent_sync("Price", doc.name, config_name="Urgent Price Changes")
-
-
-def trigger_urgent_sync_for_customer(doc, method=None):
-	trigger_urgent_sync("Customer", doc.name, config_name="Urgent Customer Changes")
-
-
-def trigger_urgent_sync_for_promotion(doc, method=None):
-	trigger_urgent_sync("Promotion", doc.name, config_name="Urgent Promotion Changes")
-
-
-def trigger_urgent_sync_for_discount(doc, method=None):
-	trigger_urgent_sync("Discount", doc.name, config_name="Urgent Discount Changes")
-
-
-def notify_middleware(entity, reference_name, config_name=None, attempt=1):
-	"""Notify Laravel middleware about urgent changes."""
+def notify_middleware(
+	entity,
+	erp_id,
+	operation="update",
+	config_name=None,
+	branch_id=None,
+	company_id=None,
+	attempt=1,
+):
+	"""Notify the Laravel middleware about an urgent change."""
 	integration = _get_active_integration()
 	if not integration or not integration.webhook_url:
 		return
@@ -62,18 +113,19 @@ def notify_middleware(entity, reference_name, config_name=None, attempt=1):
 	_touch_urgent_sync_config(entity=entity, config_name=config_name)
 
 	payload = {
-		"event": "urgent_sync",
 		"entity": entity,
-		"reference_name": reference_name,
-		"site": frappe.local.site,
-		"timestamp": now_datetime().isoformat(),
+		"erp_id": erp_id,
+		"operation": operation,
+		"branch_id": branch_id or "",
+		"company_id": company_id or "",
 	}
 	request_id = str(uuid.uuid4())
 
 	frappe.logger("custom_erpnext").info(
-		"Urgent sync triggered for %s: %s -> %s (attempt %s)",
+		"Urgent sync triggered for %s/%s (%s) -> %s (attempt %s)",
 		entity,
-		reference_name,
+		erp_id,
+		operation,
 		integration.webhook_url,
 		attempt,
 	)
@@ -91,22 +143,25 @@ def notify_middleware(entity, reference_name, config_name=None, attempt=1):
 		)
 	except Exception as err:
 		frappe.logger("custom_erpnext").warning(
-			"Urgent sync webhook failed for %s (%s): %s", entity, reference_name, err
+			"Urgent sync webhook failed for %s/%s (%s): %s", entity, erp_id, operation, err
 		)
 		if attempt < WEBHOOK_MAX_ATTEMPTS:
 			frappe.enqueue(
 				"custom_erpnext.services.sync_service.notify_middleware",
 				queue="short",
 				entity=entity,
-				reference_name=reference_name,
+				erp_id=erp_id,
+				operation=operation,
 				config_name=config_name,
+				branch_id=branch_id,
+				company_id=company_id,
 				attempt=attempt + 1,
-				job_id=f"urgent-sync-retry-{entity}-{reference_name}-{attempt + 1}",
+				job_id=f"urgent-sync-retry-{entity}-{erp_id}-{operation}-{attempt + 1}",
 				enqueue_after=WEBHOOK_RETRY_DELAY_SECONDS,
 			)
 		else:
 			frappe.log_error(
-				title=f"Urgent sync webhook failed: {entity} {reference_name}",
+				title=f"Urgent sync webhook failed: {entity} {erp_id} ({operation})",
 				message=str(err),
 			)
 
@@ -125,37 +180,44 @@ def _get_active_integration():
 
 def _post_webhook(integration, payload, request_id=None):
 	body = json.dumps(payload, separators=(",", ":"), default=str)
-	timestamp = str(int(time.time()))
 	headers = {
 		"Content-Type": "application/json",
 		"X-Request-ID": request_id or str(uuid.uuid4()),
-		"X-Timestamp": timestamp,
 	}
 
-	api_secret = integration.get_password("api_secret")
-	if api_secret:
-		message = f"{timestamp}.{body}"
-		headers["X-Signature"] = hmac.new(
-			api_secret.encode("utf-8"),
-			message.encode("utf-8"),
+	webhook_api_key = _get_secret(integration, "webhook_api_key")
+	if webhook_api_key:
+		headers["X-Webhook-API-Key"] = webhook_api_key
+
+	# Laravel verifies hash_hmac('sha256', <raw request body>, secret); sign the exact
+	# body bytes we send, with no timestamp prefix, only when a secret is configured.
+	webhook_secret = _get_secret(integration, "webhook_secret")
+	if webhook_secret:
+		headers["X-Webhook-Signature"] = hmac.new(
+			webhook_secret.encode("utf-8"),
+			body.encode("utf-8"),
 			hashlib.sha256,
 		).hexdigest()
 
-	api_key = integration.get_password("api_key")
-	if api_key and api_secret:
-		headers["Authorization"] = f"token {api_key}:{api_secret}"
-
 	timeout = integration.request_timeout or 30
-	make_post_request(
+	session = get_request_session()
+	response = session.post(
 		integration.webhook_url,
 		data=body,
 		headers=headers,
 		timeout=timeout,
 	)
-	integration_request = getattr(frappe.flags, "integration_request", None)
-	if integration_request is not None:
-		return integration_request.status_code
-	return 200
+	frappe.flags.integration_request = response
+	response.raise_for_status()
+	return response.status_code
+
+
+def _get_secret(integration, fieldname):
+	"""Read an (optional) password field without raising when it is unset."""
+	try:
+		return integration.get_password(fieldname, raise_exception=False)
+	except TypeError:
+		return integration.get_password(fieldname)
 
 
 def _touch_urgent_sync_config(entity=None, config_name=None):

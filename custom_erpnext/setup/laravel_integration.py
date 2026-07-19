@@ -181,12 +181,16 @@ def setup_production_integration(
 	webhook_url=None,
 	laravel_api_endpoint=None,
 	rate_limit_per_minute=120,
+	webhook_api_key=None,
+	webhook_secret=None,
 ):
 	"""Full production bootstrap: user, API settings, sync configs."""
 	integration = setup_laravel_integration(
 		site_url=site_url,
 		webhook_url=webhook_url,
 		rate_limit_per_minute=rate_limit_per_minute,
+		webhook_api_key=webhook_api_key,
+		webhook_secret=webhook_secret,
 	)
 	sync_configs = setup_sync_configurations(laravel_api_endpoint=laravel_api_endpoint)
 	frappe.db.commit()
@@ -207,6 +211,8 @@ def setup_laravel_integration(
 	webhook_url=None,
 	rate_limit_per_minute=120,
 	rotate_secret=False,
+	webhook_api_key=None,
+	webhook_secret=None,
 ):
 	"""Create middleware API user, keys, and integration settings."""
 	site_url = site_url or _guess_site_url()
@@ -219,6 +225,8 @@ def setup_laravel_integration(
 		rate_limit_per_minute=rate_limit_per_minute,
 		api_key=keys["api_key"],
 		api_secret=keys["api_secret"],
+		webhook_api_key=webhook_api_key,
+		webhook_secret=webhook_secret,
 	)
 
 	fix_middleware_user_roles()
@@ -231,7 +239,14 @@ def setup_laravel_integration(
 		"api_secret": keys["api_secret"],
 		"integration_settings": settings,
 		"webhook_url": webhook_url or "",
-		"env": _build_env_snippet(site_url, keys["api_key"], keys["api_secret"], webhook_url),
+		"env": _build_env_snippet(
+			site_url,
+			keys["api_key"],
+			keys["api_secret"],
+			webhook_url,
+			webhook_api_key=webhook_api_key,
+			webhook_secret=webhook_secret,
+		),
 	}
 
 
@@ -363,7 +378,44 @@ def _sync_user_branch_access(user):
 	sync_user_branch_permissions(user, branch_rows=rows)
 
 
-def _ensure_integration_settings(site_url, webhook_url, rate_limit_per_minute, api_key=None, api_secret=None):
+def sync_integration_api_credentials():
+	"""Align API Integration Settings keys with the middleware User record."""
+	if not frappe.db.exists("User", INTEGRATION_USER):
+		return False
+	if not frappe.db.exists("API Integration Settings", INTEGRATION_NAME):
+		return False
+
+	user = frappe.get_doc("User", INTEGRATION_USER)
+	if not user.api_key:
+		return False
+
+	user_secret = user.get_password("api_secret")
+	if not user_secret:
+		return False
+
+	doc = frappe.get_doc("API Integration Settings", INTEGRATION_NAME)
+	changed = False
+	if doc.api_key != user.api_key:
+		doc.api_key = user.api_key
+		changed = True
+	if doc.get_password("api_secret") != user_secret:
+		doc.api_secret = user_secret
+		changed = True
+
+	if changed:
+		doc.save(ignore_permissions=True)
+	return changed
+
+
+def _ensure_integration_settings(
+	site_url,
+	webhook_url,
+	rate_limit_per_minute,
+	api_key=None,
+	api_secret=None,
+	webhook_api_key=None,
+	webhook_secret=None,
+):
 	name = INTEGRATION_NAME
 	values = {
 		"system": "Laravel Middleware",
@@ -385,12 +437,18 @@ def _ensure_integration_settings(site_url, webhook_url, rate_limit_per_minute, a
 		doc.api_key = api_key
 	if api_secret:
 		doc.api_secret = api_secret
+	if webhook_api_key is not None:
+		doc.webhook_api_key = webhook_api_key
+	if webhook_secret is not None:
+		doc.webhook_secret = webhook_secret
 
 	doc.save(ignore_permissions=True)
 	return doc.name
 
 
-def _build_env_snippet(site_url, api_key, api_secret, webhook_url=None):
+def _build_env_snippet(
+	site_url, api_key, api_secret, webhook_url=None, webhook_api_key=None, webhook_secret=None
+):
 	lines = [
 		"ERPNEXT_BASE_URL=" + site_url,
 		"ERPNEXT_API_KEY=" + api_key,
@@ -402,4 +460,8 @@ def _build_env_snippet(site_url, api_key, api_secret, webhook_url=None):
 	]
 	if webhook_url:
 		lines.append("ERPNEXT_WEBHOOK_URL=" + webhook_url)
+	if webhook_api_key:
+		lines.append("ERPNEXT_WEBHOOK_API_KEY=" + webhook_api_key)
+	if webhook_secret:
+		lines.append("ERPNEXT_WEBHOOK_SECRET=" + webhook_secret)
 	return "\n".join(lines)

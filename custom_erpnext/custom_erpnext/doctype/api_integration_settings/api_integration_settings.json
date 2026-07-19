@@ -22,6 +22,8 @@
   "token_expiry",
   "section_webhook",
   "webhook_url",
+  "webhook_api_key",
+  "webhook_secret",
   "section_limits",
   "request_timeout",
   "rate_limit_per_minute",
@@ -117,6 +119,18 @@
    "label": "Webhook URL"
   },
   {
+   "description": "Shared key sent as X-Webhook-API-Key header (must match Laravel ERPNEXT_WEBHOOK_API_KEY).",
+   "fieldname": "webhook_api_key",
+   "fieldtype": "Password",
+   "label": "Webhook API Key"
+  },
+  {
+   "description": "Shared secret for HMAC-SHA256 body signing sent as X-Webhook-Signature (must match Laravel ERPNEXT_WEBHOOK_SECRET). Leave blank if Laravel signature validation is disabled.",
+   "fieldname": "webhook_secret",
+   "fieldtype": "Password",
+   "label": "Webhook Secret"
+  },
+  {
    "fieldname": "section_limits",
    "fieldtype": "Section Break",
    "label": "Limits"
@@ -155,7 +169,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-06-06 21:00:00.000000",
+ "modified": "2026-07-18 12:00:00.000000",
  "modified_by": "Administrator",
  "module": "Custom Erpnext",
  "name": "API Integration Settings",

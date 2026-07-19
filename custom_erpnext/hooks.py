@@ -25,7 +25,10 @@ app_license = "mit"
 # ------------------
 
 # include js, css files in header of desk.html
-app_include_css = "/assets/custom_erpnext/css/sales_invoice.css"
+app_include_css = [
+	"/assets/custom_erpnext/css/sales_invoice.css",
+	"/assets/custom_erpnext/css/sales_invoice_ksa.css"
+]
 # app_include_js = "/assets/custom_erpnext/js/custom_erpnext.js"
 
 # include js, css files in header of web template
@@ -86,10 +89,14 @@ doctype_list_js = {
 # ----------
 
 # add methods and filters to jinja environment
-# jinja = {
-# 	"methods": "custom_erpnext.utils.jinja_methods",
-# 	"filters": "custom_erpnext.utils.jinja_filters"
-# }
+jinja = {
+	"methods": [
+		"custom_erpnext.print_format.sales_invoice_helpers.get_sales_invoice_print_context",
+		"custom_erpnext.print_format.sales_invoice_helpers.get_item_tax_details",
+		"custom_erpnext.print_format.sales_invoice_helpers.get_vat_percentage",
+		"custom_erpnext.print_format.sales_invoice_helpers.get_sales_person",
+	],
+}
 
 # Installation
 # ------------
@@ -97,6 +104,7 @@ doctype_list_js = {
 # before_install = "custom_erpnext.install.before_install"
 # after_install = "custom_erpnext.install.after_install"
 after_migrate = [
+	"custom_erpnext.setup.laravel_integration.sync_integration_api_credentials",
 	"custom_erpnext.setup.workflows.setup_workflows",
 	"custom_erpnext.setup.user_permissions.sync_all_user_branch_permissions",
 	"custom_erpnext.setup.naming_series.sync_all_branch_naming_series",
@@ -178,19 +186,27 @@ doc_events = {
 			"custom_erpnext.services.item_service.validate_selling_prices",
 			"custom_erpnext.services.item_service.validate_composite_item",
 		],
-		"on_update": "custom_erpnext.services.sync_service.trigger_urgent_sync_for_item",
+		"after_insert": "custom_erpnext.services.sync_service.trigger_urgent_sync_doc_event",
+		"on_update": "custom_erpnext.services.sync_service.trigger_urgent_sync_doc_event",
+		"on_trash": "custom_erpnext.services.sync_service.trigger_urgent_sync_doc_event",
 	},
 	"Item Price": {
-		"on_update": "custom_erpnext.services.sync_service.trigger_urgent_sync_for_item_price",
+		"after_insert": "custom_erpnext.services.sync_service.trigger_urgent_sync_doc_event",
+		"on_update": "custom_erpnext.services.sync_service.trigger_urgent_sync_doc_event",
+		"on_trash": "custom_erpnext.services.sync_service.trigger_urgent_sync_doc_event",
 	},
 	"Promotion Rule": {
-		"on_update": "custom_erpnext.services.sync_service.trigger_urgent_sync_for_promotion",
+		"after_insert": "custom_erpnext.services.sync_service.trigger_urgent_sync_doc_event",
+		"on_update": "custom_erpnext.services.sync_service.trigger_urgent_sync_doc_event",
+		"on_trash": "custom_erpnext.services.sync_service.trigger_urgent_sync_doc_event",
 	},
 	"User Discount Profile": {
+		"after_insert": "custom_erpnext.services.sync_service.trigger_urgent_sync_doc_event",
 		"on_update": [
 			"custom_erpnext.services.branch_permission_service.sync_profile_branch_permissions",
-			"custom_erpnext.services.sync_service.trigger_urgent_sync_for_discount",
+			"custom_erpnext.services.sync_service.trigger_urgent_sync_doc_event",
 		],
+		"on_trash": "custom_erpnext.services.sync_service.trigger_urgent_sync_doc_event",
 	},
 	"Material Request": {
 		"validate": _branch_validate_handlers("Material Request"),
@@ -240,7 +256,9 @@ doc_events = {
 			"custom_erpnext.services.branch_permission_service.validate_document_branch",
 			"custom_erpnext.services.sales_invoice_service.validate_customer_tax_id",
 		],
-		"on_update": "custom_erpnext.services.sync_service.trigger_urgent_sync_for_customer",
+		"after_insert": "custom_erpnext.services.sync_service.trigger_urgent_sync_doc_event",
+		"on_update": "custom_erpnext.services.sync_service.trigger_urgent_sync_doc_event",
+		"on_trash": "custom_erpnext.services.sync_service.trigger_urgent_sync_doc_event",
 	},
 	"Sales Invoice Additional Fields": {
 		# Mirror ksa_compliance async status updates back to retail Sales Invoice fields.
