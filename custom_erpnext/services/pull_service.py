@@ -170,6 +170,8 @@ def pull_item_prices(company=None, modified_from=None, page=1, page_size=200):
 			"price_list",
 			"currency",
 			"price_list_rate",
+			"buying",
+			"selling",
 			"valid_from",
 			"valid_upto",
 			"modified",
@@ -750,7 +752,16 @@ def _get_item_prices(item_codes, price_list, company):
 	rows = frappe.get_all(
 		"Item Price",
 		filters=filters,
-		fields=["item_code", "price_list", "currency", "price_list_rate", "valid_from", "valid_upto"],
+		fields=[
+			"item_code",
+			"price_list",
+			"currency",
+			"price_list_rate",
+			"buying",
+			"selling",
+			"valid_from",
+			"valid_upto",
+		],
 	)
 	result = {}
 	for row in rows:
