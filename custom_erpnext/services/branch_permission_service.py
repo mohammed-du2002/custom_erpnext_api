@@ -111,6 +111,48 @@ def get_default_branch(user=None):
 	return frappe.db.get_value("User", user, "branch")
 
 
+def get_fallback_branch(company=None):
+	"""Return any active Company Branch, preferring one that matches ``company``.
+
+	Used to populate the mandatory ``branch`` field for documents created without an
+	explicit branch (e.g. programmatic flows such as the ZATCA compliance checks, or
+	documents saved by bypass users who are not tied to a specific branch).
+	"""
+	if company:
+		branch = frappe.db.get_value(
+			"Company Branch",
+			{"company": company, "is_active": 1},
+			"name",
+			order_by="creation asc",
+		)
+		if branch:
+			return branch
+
+	return frappe.db.get_value("Company Branch", {"is_active": 1}, "name", order_by="creation asc")
+
+
+def ensure_mandatory_branch(doc, user=None):
+	"""Assign a fallback branch when the field is mandatory but left empty.
+
+	Bypass users (Administrator / System Manager) skip branch permission checks, so the
+	regular auto-fill in :func:`validate_document_branch` never runs for them. Combined
+	with the ``branch`` custom field being mandatory, any programmatic document they
+	create (notably ZATCA compliance test invoices) fails mandatory validation. This
+	keeps such documents valid without weakening the mandatory rule in the UI.
+	"""
+	user = user or frappe.session.user
+	if not doc.meta.has_field("branch") or doc.get("branch"):
+		return
+
+	df = doc.meta.get_field("branch")
+	if not (df and df.reqd):
+		return
+
+	branch = get_default_branch(user) or get_fallback_branch(doc.get("company"))
+	if branch:
+		doc.branch = branch
+
+
 def user_has_branch_access(user, branch):
 	if not branch:
 		return True
@@ -191,6 +233,7 @@ def has_branch_permission(doc, ptype=None, user=None, debug=False):
 def validate_document_branch(doc, method=None):
 	user = frappe.session.user
 	if bypass_branch_restrictions(user):
+		ensure_mandatory_branch(doc, user)
 		return
 
 	if doc.doctype == "Material Request":
