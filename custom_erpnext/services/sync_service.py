@@ -238,15 +238,22 @@ def _touch_urgent_sync_config(entity=None, config_name=None):
 	)
 
 
+# Cap concurrent sync jobs per scheduler tick to avoid MariaDB connection storms
+# on Frappe Cloud shared plans after deploy.
+MAX_SYNC_ENQUEUE_PER_TICK = 3
+
+
 def run_scheduled_sync_configs():
 	"""Process active sync configurations due for execution."""
 	configs = frappe.get_all(
 		"Sync Configuration",
 		filters={"is_active": 1, "frequency": ["!=", "Manual"]},
 		fields=["name", "config_name", "sync_type", "entity", "frequency", "next_sync_time"],
+		order_by="next_sync_time asc",
 	)
 
 	now = now_datetime()
+	enqueued = 0
 	for config in configs:
 		if config.next_sync_time and config.next_sync_time > now:
 			continue
@@ -258,6 +265,9 @@ def run_scheduled_sync_configs():
 			job_id=f"sync-config-{config.name}",
 			deduplicate=True,
 		)
+		enqueued += 1
+		if enqueued >= MAX_SYNC_ENQUEUE_PER_TICK:
+			break
 
 
 def execute_sync_config(config_name):

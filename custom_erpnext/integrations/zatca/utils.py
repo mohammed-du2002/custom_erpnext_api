@@ -317,18 +317,46 @@ def sync_all_company_branches_to_erpnext():
 
 
 def sync_all_customer_tax_ids():
+	"""Bulk-align Customer tax_id / VAT fields with two UPDATEs (FC-safe)."""
 	if not is_ksa_compliance_installed():
 		return {"synced": 0}
 
-	count = 0
-	for row in frappe.get_all("Customer", fields=["name", "tax_id", "custom_vat_registration_number"]):
-		tax_id = (row.tax_id or "").strip()
-		vat = (row.custom_vat_registration_number or "").strip()
-		if tax_id and not vat:
-			frappe.db.set_value("Customer", row.name, "custom_vat_registration_number", tax_id, update_modified=False)
-			count += 1
-		elif vat and not tax_id:
-			frappe.db.set_value("Customer", row.name, "tax_id", vat, update_modified=False)
-			count += 1
+	if not frappe.db.has_column("Customer", "custom_vat_registration_number"):
+		return {"synced": 0}
 
-	return {"synced": count}
+	# Prefer set-based updates over per-row set_value to avoid connection spikes.
+	to_vat = frappe.db.sql(
+		"""
+		SELECT COUNT(*) FROM `tabCustomer`
+		WHERE IFNULL(tax_id, '') != ''
+			AND IFNULL(custom_vat_registration_number, '') = ''
+		"""
+	)[0][0]
+	if to_vat:
+		frappe.db.sql(
+			"""
+			UPDATE `tabCustomer`
+			SET custom_vat_registration_number = tax_id
+			WHERE IFNULL(tax_id, '') != ''
+				AND IFNULL(custom_vat_registration_number, '') = ''
+			"""
+		)
+
+	to_tax = frappe.db.sql(
+		"""
+		SELECT COUNT(*) FROM `tabCustomer`
+		WHERE IFNULL(custom_vat_registration_number, '') != ''
+			AND IFNULL(tax_id, '') = ''
+		"""
+	)[0][0]
+	if to_tax:
+		frappe.db.sql(
+			"""
+			UPDATE `tabCustomer`
+			SET tax_id = custom_vat_registration_number
+			WHERE IFNULL(custom_vat_registration_number, '') != ''
+				AND IFNULL(tax_id, '') = ''
+			"""
+		)
+
+	return {"synced": int(to_vat) + int(to_tax)}

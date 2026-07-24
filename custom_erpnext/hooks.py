@@ -103,16 +103,10 @@ jinja = {
 
 # before_install = "custom_erpnext.install.before_install"
 # after_install = "custom_erpnext.install.after_install"
+# Keep migrate light on Frappe Cloud (shared MariaDB max_connections).
+# Heavy setup is deferred via custom_erpnext.setup.after_migrate.
 after_migrate = [
-	"custom_erpnext.setup.laravel_integration.sync_integration_api_credentials",
-	"custom_erpnext.setup.workflows.setup_workflows",
-	"custom_erpnext.setup.user_permissions.sync_all_user_branch_permissions",
-	"custom_erpnext.setup.naming_series.sync_all_branch_naming_series",
-	"custom_erpnext.setup.sales_invoice_setup.cleanup_removed_sales_invoice_fields",
-	"custom_erpnext.setup.stock_settings.enable_negative_stock_for_retail",
-	"custom_erpnext.integrations.zatca.hooks.check_ksa_compliance_dependency",
-	"custom_erpnext.integrations.zatca.hooks.setup_zatca_integration",
-	"custom_erpnext.setup.build_ar_translations.build_ar_translations",
+	"custom_erpnext.setup.after_migrate.run_after_migrate",
 ]
 
 # Uninstallation
@@ -299,7 +293,8 @@ doc_events = {
 
 scheduler_events = {
 	"cron": {
-		"*/10 * * * *": ["custom_erpnext.tasks.run_scheduled_sync"],
+		# 15m cadence + enqueue cap in sync_service reduces FC DB connection spikes.
+		"*/15 * * * *": ["custom_erpnext.tasks.run_scheduled_sync"],
 	},
 	"hourly": ["custom_erpnext.tasks.check_item_reorder"],
 }

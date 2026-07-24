@@ -59,8 +59,9 @@ def _ensure_workflow_actions():
 
 def _setup_material_request_workflow():
 	name = "Retail Material Request Approval"
+	# Idempotent: recreate only when missing (avoid delete+insert on every migrate).
 	if frappe.db.exists("Workflow", name):
-		frappe.delete_doc("Workflow", name, force=1)
+		return
 
 	workflow = frappe.get_doc(
 		{
@@ -92,8 +93,9 @@ def _setup_material_request_workflow():
 
 def _setup_stock_transfer_workflow():
 	name = "Retail Stock Transfer Workflow"
+	# Idempotent: recreate only when missing (avoid delete+insert on every migrate).
 	if frappe.db.exists("Workflow", name):
-		frappe.delete_doc("Workflow", name, force=1)
+		return
 
 	workflow = frappe.get_doc(
 		{
