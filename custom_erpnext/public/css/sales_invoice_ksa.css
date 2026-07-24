@@ -1,0 +1,626 @@
+/*
+ * Sales Invoice KSA Modern — Print Format Stylesheet
+ * ====================================================
+ * A4 Portrait | wkhtmltopdf compatible | RTL + LTR
+ * Designed for ERPNext v16 / Frappe v16
+ *
+ * DO NOT use Bootstrap / Tailwind / inline styles.
+ * Pure CSS only.
+ */
+
+/* ── Reset & Page ───────────────────────────────────────── */
+@page {
+    size: A4 portrait;
+    margin: 12mm 10mm 12mm 10mm;
+}
+
+.ksa-invoice *,
+.ksa-invoice *::before,
+.ksa-invoice *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.ksa-invoice {
+    font-family: Tahoma, Arial, "Noto Sans Arabic", sans-serif;
+    font-size: 9pt;
+    line-height: 1.45;
+    color: #1a1a1a;
+    background: #fff;
+    max-width: 210mm;
+    margin: 0 auto;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+/* ── Color Tokens ───────────────────────────────────────── */
+.ksa-invoice {
+    --ksa-dark: #1a1a1a;
+    --ksa-gray-700: #374151;
+    --ksa-gray-600: #4b5563;
+    --ksa-gray-500: #6b7280;
+    --ksa-gray-400: #9ca3af;
+    --ksa-gray-200: #e5e7eb;
+    --ksa-gray-100: #f3f4f6;
+    --ksa-gray-50: #f9fafb;
+    --ksa-border: #d1d5db;
+    --ksa-border-light: #e5e7eb;
+    --ksa-accent: #1f2937;
+    --ksa-accent-light: #f8f9fa;
+}
+
+/* ── Typography ─────────────────────────────────────────── */
+.ksa-invoice .ksa-text-rtl {
+    direction: rtl;
+    text-align: right;
+    unicode-bidi: bidi-override;
+}
+
+.ksa-invoice .ksa-text-ltr {
+    direction: ltr;
+    text-align: left;
+}
+
+.ksa-invoice .ksa-text-center {
+    text-align: center;
+}
+
+.ksa-invoice .ksa-text-bold {
+    font-weight: 700;
+}
+
+.ksa-invoice .ksa-text-semibold {
+    font-weight: 600;
+}
+
+.ksa-invoice .ksa-text-muted {
+    color: var(--ksa-gray-500);
+}
+
+.ksa-invoice .ksa-text-sm {
+    font-size: 8pt;
+}
+
+.ksa-invoice .ksa-text-xs {
+    font-size: 7pt;
+}
+
+.ksa-invoice .ksa-text-lg {
+    font-size: 11pt;
+}
+
+.ksa-invoice .ksa-text-xl {
+    font-size: 13pt;
+}
+
+/* ── Top Border Accent ──────────────────────────────────── */
+.ksa-invoice .ksa-top-accent {
+    height: 3px;
+    background: var(--ksa-accent);
+    margin-bottom: 0;
+}
+
+/* ── Header (3-Column) ──────────────────────────────────── */
+.ksa-invoice .ksa-header {
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    margin-bottom: 4px;
+    border: 1px solid var(--ksa-border);
+    border-top: none;
+}
+
+.ksa-invoice .ksa-header-cell {
+    display: table-cell;
+    vertical-align: middle;
+    padding: 10px 14px;
+}
+
+.ksa-invoice .ksa-header-left {
+    width: 35%;
+    text-align: left;
+    direction: ltr;
+}
+
+.ksa-invoice .ksa-header-center {
+    width: 30%;
+    text-align: center;
+    border-left: 1px solid var(--ksa-border-light);
+    border-right: 1px solid var(--ksa-border-light);
+}
+
+.ksa-invoice .ksa-header-right {
+    width: 35%;
+    text-align: right;
+    direction: rtl;
+}
+
+.ksa-invoice .ksa-header .ksa-company-name {
+    font-size: 12pt;
+    font-weight: 700;
+    color: var(--ksa-dark);
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.ksa-invoice .ksa-header .ksa-company-detail {
+    font-size: 8pt;
+    color: var(--ksa-gray-600);
+    line-height: 1.6;
+}
+
+.ksa-invoice .ksa-header .ksa-company-detail .ksa-label {
+    font-weight: 600;
+    color: var(--ksa-gray-700);
+}
+
+.ksa-invoice .ksa-company-logo {
+    max-width: 120px;
+    max-height: 80px;
+    height: auto;
+    width: auto;
+    object-fit: contain;
+}
+
+/* ── Company Address Row ────────────────────────────────── */
+.ksa-invoice .ksa-address-row {
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    border: 1px solid var(--ksa-border);
+    border-top: none;
+    margin-bottom: 6px;
+}
+
+.ksa-invoice .ksa-address-cell {
+    display: table-cell;
+    vertical-align: top;
+    padding: 6px 14px;
+    font-size: 8pt;
+    color: var(--ksa-gray-600);
+    line-height: 1.6;
+}
+
+.ksa-invoice .ksa-address-cell-en {
+    width: 50%;
+    text-align: left;
+    direction: ltr;
+    border-right: 1px solid var(--ksa-border-light);
+}
+
+.ksa-invoice .ksa-address-cell-ar {
+    width: 50%;
+    text-align: right;
+    direction: rtl;
+}
+
+.ksa-invoice .ksa-address-cell .ksa-label {
+    font-weight: 600;
+    color: var(--ksa-gray-700);
+}
+
+/* ── Invoice Title ──────────────────────────────────────── */
+.ksa-invoice .ksa-title-bar {
+    background: var(--ksa-accent);
+    color: #fff;
+    text-align: center;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+}
+
+.ksa-invoice .ksa-title-bar .ksa-title-ar {
+    font-size: 14pt;
+    font-weight: 700;
+    direction: rtl;
+    line-height: 1.4;
+}
+
+.ksa-invoice .ksa-title-bar .ksa-title-en {
+    font-size: 11pt;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: 0.02em;
+}
+
+/* ── Invoice Info + Customer Section ────────────────────── */
+.ksa-invoice .ksa-info-grid {
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    border: 1px solid var(--ksa-border);
+    margin-bottom: 6px;
+}
+
+.ksa-invoice .ksa-info-col {
+    display: table-cell;
+    vertical-align: top;
+    width: 50%;
+    padding: 0;
+}
+
+.ksa-invoice .ksa-info-col:first-child {
+    border-right: 1px solid var(--ksa-border);
+}
+
+.ksa-invoice .ksa-info-col .ksa-info-title {
+    background: var(--ksa-gray-100);
+    padding: 5px 10px;
+    font-size: 9pt;
+    font-weight: 700;
+    color: var(--ksa-gray-700);
+    border-bottom: 1px solid var(--ksa-border-light);
+    text-align: center;
+}
+
+.ksa-invoice .ksa-info-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ksa-invoice .ksa-info-table td {
+    padding: 3px 10px;
+    font-size: 8.5pt;
+    border-bottom: 1px solid var(--ksa-border-light);
+    vertical-align: top;
+}
+
+.ksa-invoice .ksa-info-table tr:last-child td {
+    border-bottom: none;
+}
+
+.ksa-invoice .ksa-info-table .ksa-info-label {
+    width: 40%;
+    font-weight: 600;
+    color: var(--ksa-gray-700);
+    white-space: nowrap;
+}
+
+.ksa-invoice .ksa-info-table .ksa-info-value {
+    color: var(--ksa-dark);
+    word-break: break-word;
+}
+
+/* ── QR Code ────────────────────────────────────────────── */
+.ksa-invoice .ksa-qr-section {
+    text-align: center;
+    padding: 6px 10px;
+    border-bottom: 1px solid var(--ksa-border-light);
+}
+
+.ksa-invoice .ksa-qr-image {
+    width: 110px;
+    height: 110px;
+    object-fit: contain;
+}
+
+.ksa-invoice .ksa-qr-label {
+    font-size: 7pt;
+    color: var(--ksa-gray-500);
+    margin-top: 2px;
+}
+
+/* ── Items Table ────────────────────────────────────────── */
+.ksa-invoice .ksa-items-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 6px;
+    border: 1px solid var(--ksa-border);
+}
+
+.ksa-invoice .ksa-items-table thead {
+    display: table-header-group;
+}
+
+.ksa-invoice .ksa-items-table thead th {
+    background: var(--ksa-accent);
+    color: #fff;
+    font-size: 7.5pt;
+    font-weight: 600;
+    padding: 5px 6px;
+    text-align: center;
+    border: 1px solid var(--ksa-accent);
+    white-space: nowrap;
+    letter-spacing: 0.01em;
+}
+
+.ksa-invoice .ksa-items-table tbody td {
+    padding: 4px 6px;
+    font-size: 8pt;
+    border: 1px solid var(--ksa-border-light);
+    vertical-align: top;
+    text-align: center;
+}
+
+.ksa-invoice .ksa-items-table tbody tr:nth-child(even) {
+    background: var(--ksa-gray-50);
+}
+
+.ksa-invoice .ksa-items-table .ksa-col-idx {
+    width: 4%;
+    text-align: center;
+}
+
+.ksa-invoice .ksa-items-table .ksa-col-code {
+    width: 10%;
+    text-align: left;
+    direction: ltr;
+}
+
+.ksa-invoice .ksa-items-table .ksa-col-desc-en {
+    width: 18%;
+    text-align: left;
+    direction: ltr;
+    word-break: break-word;
+}
+
+.ksa-invoice .ksa-items-table .ksa-col-desc-ar {
+    width: 16%;
+    text-align: right;
+    direction: rtl;
+    word-break: break-word;
+}
+
+.ksa-invoice .ksa-items-table .ksa-col-uom {
+    width: 7%;
+}
+
+.ksa-invoice .ksa-items-table .ksa-col-qty {
+    width: 7%;
+}
+
+.ksa-invoice .ksa-items-table .ksa-col-rate {
+    width: 11%;
+    text-align: right;
+    direction: ltr;
+}
+
+.ksa-invoice .ksa-items-table .ksa-col-discount {
+    width: 10%;
+    text-align: right;
+    direction: ltr;
+}
+
+.ksa-invoice .ksa-items-table .ksa-col-amount {
+    width: 12%;
+    text-align: right;
+    direction: ltr;
+    font-weight: 600;
+}
+
+/* Avoid row breaks across pages */
+.ksa-invoice .ksa-items-table tbody tr {
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+/* ── Totals Section ─────────────────────────────────────── */
+.ksa-invoice .ksa-totals-grid {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    margin-bottom: 6px;
+}
+
+.ksa-invoice .ksa-totals-left {
+    display: table-cell;
+    vertical-align: top;
+    width: 50%;
+    padding-right: 6px;
+}
+
+.ksa-invoice .ksa-totals-right {
+    display: table-cell;
+    vertical-align: top;
+    width: 50%;
+    padding-left: 6px;
+}
+
+.ksa-invoice .ksa-totals-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--ksa-border);
+}
+
+.ksa-invoice .ksa-totals-table td {
+    padding: 4px 10px;
+    font-size: 8.5pt;
+    border-bottom: 1px solid var(--ksa-border-light);
+}
+
+.ksa-invoice .ksa-totals-table tr:last-child td {
+    border-bottom: none;
+}
+
+.ksa-invoice .ksa-totals-table .ksa-totals-label {
+    font-weight: 600;
+    color: var(--ksa-gray-700);
+    width: 55%;
+}
+
+.ksa-invoice .ksa-totals-table .ksa-totals-value {
+    text-align: right;
+    direction: ltr;
+    font-weight: 500;
+    color: var(--ksa-dark);
+    font-variant-numeric: tabular-nums;
+}
+
+.ksa-invoice .ksa-totals-table .ksa-totals-grand {
+    background: var(--ksa-accent);
+    color: #fff;
+    font-size: 9.5pt;
+    font-weight: 700;
+}
+
+.ksa-invoice .ksa-totals-table .ksa-totals-grand td {
+    border-bottom: none;
+    padding: 6px 10px;
+}
+
+/* ── Amount In Words ────────────────────────────────────── */
+.ksa-invoice .ksa-in-words {
+    border: 1px solid var(--ksa-border);
+    padding: 6px 10px;
+    margin-bottom: 6px;
+    background: var(--ksa-gray-50);
+}
+
+.ksa-invoice .ksa-in-words-title {
+    font-size: 8pt;
+    font-weight: 700;
+    color: var(--ksa-gray-700);
+    margin-bottom: 2px;
+}
+
+.ksa-invoice .ksa-in-words-text {
+    font-size: 8.5pt;
+    color: var(--ksa-dark);
+    line-height: 1.5;
+}
+
+.ksa-invoice .ksa-in-words-text-ar {
+    direction: rtl;
+    text-align: right;
+}
+
+/* ── Signature Area ─────────────────────────────────────── */
+.ksa-invoice .ksa-signatures {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    border: 1px solid var(--ksa-border);
+    margin-bottom: 6px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+.ksa-invoice .ksa-signature-box {
+    display: table-cell;
+    width: 50%;
+    padding: 8px 14px;
+    vertical-align: top;
+}
+
+.ksa-invoice .ksa-signature-box:first-child {
+    border-right: 1px solid var(--ksa-border);
+}
+
+.ksa-invoice .ksa-signature-title {
+    font-size: 8.5pt;
+    font-weight: 700;
+    color: var(--ksa-gray-700);
+    margin-bottom: 4px;
+    text-align: center;
+}
+
+.ksa-invoice .ksa-signature-space {
+    height: 60px;
+    border-bottom: 1px solid var(--ksa-gray-400);
+    margin-bottom: 4px;
+}
+
+.ksa-invoice .ksa-signature-label {
+    font-size: 7pt;
+    color: var(--ksa-gray-500);
+    text-align: center;
+}
+
+/* ── Footer ─────────────────────────────────────────────── */
+.ksa-invoice .ksa-footer {
+    border-top: 2px solid var(--ksa-accent);
+    padding-top: 6px;
+    margin-top: 6px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+.ksa-invoice .ksa-footer-content {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+.ksa-invoice .ksa-footer-col {
+    display: table-cell;
+    vertical-align: top;
+    padding: 0 8px;
+    font-size: 7pt;
+    color: var(--ksa-gray-500);
+    line-height: 1.6;
+}
+
+.ksa-invoice .ksa-footer-col:first-child {
+    padding-left: 0;
+    text-align: left;
+    direction: ltr;
+    width: 50%;
+}
+
+.ksa-invoice .ksa-footer-col:last-child {
+    padding-right: 0;
+    text-align: right;
+    direction: rtl;
+    width: 50%;
+}
+
+.ksa-invoice .ksa-footer-col .ksa-label {
+    font-weight: 600;
+    color: var(--ksa-gray-600);
+}
+
+.ksa-invoice .ksa-footer-divider {
+    height: 1px;
+    background: var(--ksa-border-light);
+    margin: 4px 0;
+}
+
+.ksa-invoice .ksa-footer-copyright {
+    text-align: center;
+    font-size: 6.5pt;
+    color: var(--ksa-gray-400);
+    padding-top: 4px;
+}
+
+/* ── Page Break Utilities ───────────────────────────────── */
+.ksa-invoice .ksa-page-break-before {
+    page-break-before: always;
+}
+
+.ksa-invoice .ksa-no-break {
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+/* ── Print-specific ─────────────────────────────────────── */
+@media print {
+    .ksa-invoice {
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Ensure table headers repeat */
+    .ksa-invoice .ksa-items-table thead {
+        display: table-header-group !important;
+    }
+
+    .ksa-invoice .ksa-items-table tfoot {
+        display: table-footer-group;
+    }
+}
+
+/* ── Screen preview adjustments ─────────────────────────── */
+@media screen {
+    .ksa-invoice {
+        padding: 20px;
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        margin: 20px auto;
+    }
+}
